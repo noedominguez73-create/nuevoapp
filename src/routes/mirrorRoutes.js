@@ -348,7 +348,26 @@ router.post('/keys', async (req, res) => {
 
         res.json({ message: 'Key added successfully' });
     } catch (e) {
-        res.status(500).json({ error: e.message });
+        // --- DIAGNOSTIC BLOCK ---
+        const fs = await import('fs');
+        const path = await import('path');
+        const { fileURLToPath } = await import('url');
+        const __filename = fileURLToPath(import.meta.url);
+        const projectRoot = path.resolve(path.dirname(__filename), '../../'); // src/routes -> src -> appnode
+        const dbDir = path.join(projectRoot, 'database');
+
+        let diagMsg = `DB Error: ${e.message}. `;
+        try {
+            const testFile = path.join(dbDir, `write_test_${Date.now()}.txt`);
+            fs.writeFileSync(testFile, 'write check');
+            fs.unlinkSync(testFile);
+            diagMsg += `[FS DIAG: Success writing to ${dbDir}]`;
+        } catch (fsErr) {
+            diagMsg += `[FS DIAG: FAILED writing to ${dbDir}. Error: ${fsErr.message}]`;
+        }
+
+        console.error("DEBUG KEY SAVE:", diagMsg);
+        res.status(500).json({ error: diagMsg });
     }
 });
 
