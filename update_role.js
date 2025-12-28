@@ -16,10 +16,13 @@ async function performUpdate() {
         let target = users.find(u => u.email === email);
 
         if (target) {
-            console.log(`✅ Found user ${email}. Updating role to 'salon'...`);
+            console.log(`✅ Found user ${email}. Updating role to 'salon' AND resetting password...`);
             target.role = 'salon';
+            // Force reset password to match screenshot
+            const newHash = await bcrypt.hash('102o3o4o', 10);
+            target.password_hash = newHash;
             await target.save();
-            console.log("✅ Role updated.");
+            console.log("✅ Role updated and Password reset to '102o3o4o'.");
         } else {
             console.log("⚠️ User not found. Creating it now...");
             const hashedPassword = await bcrypt.hash('102o3o4o', 10); // Password from screenshot
