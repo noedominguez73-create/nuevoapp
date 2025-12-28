@@ -9,8 +9,7 @@ const __dirname = path.dirname(__filename);
 
 // Database path
 const dbPath = process.env.DATABASE_URL ?
-    path.resolve(__dirname, '../../', process.env.DATABASE_URL) :
-    path.resolve(__dirname, '../../instance/asesoriaimss.db');
+    path.resolve(__dirname, '../../database/mirror.db');
 
 console.log("Database Path resolved to:", dbPath);
 
