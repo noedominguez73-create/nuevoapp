@@ -27,13 +27,23 @@ router.post('/login', async (req, res) => {
         // User said "borra rompe", so I'll stick to standard bcrypt for new system.
         // If I want to support old passwords, I'd need a python-compatible verify function.
 
+
+        // SAFER LOGIN LOGIC
+        console.log(`🔐 Login Attempt for: ${email}`);
+
+        // 1. Check if legacy hash (Python Werkzeug style usually doesn't start with $2)
+        if (!user.password_hash || !user.password_hash.startsWith('$2')) {
+            console.log("⚠️ Legacy or invalid password hash detected. Blocked to prevent crash.");
+            console.log("Hash Found:", user.password_hash);
+            return res.status(401).json({ error: 'Contraseña antigua no compatible. Por favor contacta soporte o regístrate de nuevo.' });
+        }
+
         const valid = await bcrypt.compare(password, user.password_hash);
         if (!valid) {
-            // Fallback: If migration just happened, maybe we allow a "migration" login or just fail.
-            // Given instructions, I'll return fail.
-            // But wait, I can try to detect if it's a plain text password (dev mode) or just fail.
+            console.log("❌ Password mismatch");
             return res.status(401).json({ error: 'Credenciales inválidas' });
         }
+        console.log("✅ Password matched");
 
         const token = generateToken(user);
         res.json({
