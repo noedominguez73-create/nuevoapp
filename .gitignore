@@ -8,3 +8,6 @@ instance/
 static/uploads/
 !static/uploads/.gitkeep
 node_modules/
+database/mirror.db
+database/mirror.db-wal
+database/mirror.db-shm

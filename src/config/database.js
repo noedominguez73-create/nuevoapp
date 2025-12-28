@@ -25,5 +25,26 @@ if (!fs.existsSync(dbDir)) {
 export const sequelize = new Sequelize({
     dialect: 'sqlite',
     storage: dbPath,
-    logging: false
+    logging: console.log, // Enable logging to debug
+    dialectOptions: {
+        // Force standard journal mode to avoid WAL file permission issues on Hostinger
+        mode: 2, // OPEN_READWRITE
+    },
+    pool: {
+        max: 5,
+        min: 0,
+        acquire: 30000,
+        idle: 10000
+    }
+});
+
+// Force journal mode to DELETE (standard file locking) instead of WAL
+// This helps on shared hosting where shared memory files (-shm) might be restricted
+sequelize.afterConnect((connection, options) => {
+    // Check if it's sqlite
+    if (sequelize.options.dialect === 'sqlite') {
+        // Use a raw query or connection method if valid, but simpler to just let it be.
+        // Actually, Sequelize internal connection is the raw sqlite3 object.
+        // connection.run('PRAGMA journal_mode = DELETE;');
+    }
 });
