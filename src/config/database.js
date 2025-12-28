@@ -25,11 +25,7 @@ if (!fs.existsSync(dbDir)) {
 export const sequelize = new Sequelize({
     dialect: 'sqlite',
     storage: dbPath,
-    logging: console.log, // Enable logging to debug
-    dialectOptions: {
-        // Force standard journal mode to avoid WAL file permission issues on Hostinger
-        mode: 2, // OPEN_READWRITE
-    },
+    logging: false, // Reduce noise unless debugging
     pool: {
         max: 5,
         min: 0,
@@ -38,13 +34,26 @@ export const sequelize = new Sequelize({
     }
 });
 
-// Force journal mode to DELETE (standard file locking) instead of WAL
-// This helps on shared hosting where shared memory files (-shm) might be restricted
-sequelize.afterConnect((connection, options) => {
-    // Check if it's sqlite
+// Force journal mode to DELETE to avoid locking issues on shared hosting
+sequelize.afterConnect((connection) => {
+    // For SQLite, we must be careful. 
+    // Sequelize exposes the raw node-sqlite3 database object in 'connection' usually,
+    // or we can run a raw query through sequelize if the hook doesn't provide it directly in a standard way.
+    // Safest cross-platform way in Sequelize for SQLite pragma:
     if (sequelize.options.dialect === 'sqlite') {
-        // Use a raw query or connection method if valid, but simpler to just let it be.
-        // Actually, Sequelize internal connection is the raw sqlite3 object.
-        // connection.run('PRAGMA journal_mode = DELETE;');
+        // Run async param
+        try {
+            // node-sqlite3 API: connection.run(sql)
+            // But 'connection' might be wrapped.
+            // Let's use sequelize.query instead to be safe, but afterConnect implies we have a raw connection.
+            // Investigating: Sequelize for sqlite, 'connection' is the database instance.
+            // We can try:
+            if (typeof connection.run === 'function') {
+                connection.run('PRAGMA journal_mode = DELETE;');
+                console.log("🔧 Power-User: Forced SQLite Journal Mode to DELETE");
+            }
+        } catch (e) {
+            console.error("Failed to set journal_mode:", e);
+        }
     }
 });
