@@ -53,7 +53,8 @@ router.post('/salones', async (req, res) => {
             city,
             state,
             country,
-            tokens_consumed
+            tokens_consumed,
+            password
         } = req.body;
 
         const email = client_identifier;
@@ -67,7 +68,8 @@ router.post('/salones', async (req, res) => {
 
         if (!user) {
             isNewUser = true;
-            const hashedPassword = await bcrypt.hash('102o3o4o', 10);
+            const plainPassword = password && password.trim() ? password.trim() : '102o3o4o';
+            const hashedPassword = await bcrypt.hash(plainPassword, 10);
             user = await User.create({
                 email,
                 password_hash: hashedPassword,

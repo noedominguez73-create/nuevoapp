@@ -412,370 +412,132 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label
-                                                class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Inicio
-                                                Operaciones</label>
-                                            <input type="date" id="salonStartDate" required
-                                                class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 outline-none">
-                                        </div>
-                                        <div>
-                                            <label
-                                                class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Fecha
-                                                de Cobro</label>
-                                            <input type="date" id="salonPaymentDate" required
-                                                class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 outline-none">
-                                        </div>
+                                </div>
+                                <div class="mb-4">
+                                    <label
+                                        class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Contraseña
+                                        (Opcional)</label>
+                                    <input type="text" id="salonPassword"
+                                        placeholder="Dejar vacío para usar default (102o3o4o)"
+                                        class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 outline-none">
+                                    <p class="text-xs text-gray-400 mt-1">Si dejas esto vacío, la contraseña será:
+                                        <code class="bg-gray-100 px-1 rounded text-red-500 font-mono">102o3o4o</code>
+                                    </p>
+                                </div>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label
+                                            class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Inicio
+                                            Operaciones</label>
+                                        <input type="date" id="salonStartDate" required
+                                            class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 outline-none">
                                     </div>
                                     <div>
                                         <label
-                                            class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Tokens
-                                            Inciales (Consumidos)</label>
-                                        <input type="number" id="salonTokens" value="0" min="0"
+                                            class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Fecha
+                                            de Cobro</label>
+                                        <input type="date" id="salonPaymentDate" required
                                             class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 outline-none">
                                     </div>
-                                    <button type="submit"
-                                        class="w-full py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition font-bold shadow-lg shadow-blue-200 mt-4">
-                                        Crear Salón
-                                    </button>
+                                </div>
+                                <div>
+                                    <label
+                                        class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Tokens
+                                        Inciales (Consumidos)</label>
+                                    <input type="number" id="salonTokens" value="0" min="0"
+                                        class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 outline-none">
+                                </div>
+                                <button type="submit"
+                                    class="w-full py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition font-bold shadow-lg shadow-blue-200 mt-4">
+                                    Crear Salón
+                                </button>
                             </form>
                         </div>
                     </div>
 
                     <!-- Shops Tab (New) -->
                     <div id="shopsTab" class="tab-content hidden">
-                        <div class="flex justify-between items-center mb-8">
-                            <h2 class="font-serif text-2xl font-bold text-gray-900">Tiendas Asociadas</h2>
-                            <button
-                                class="bg-blue-600 text-white px-6 py-2 rounded-xl text-sm font-semibold hover:bg-blue-700 transition shadow-lg shadow-blue-200">
-                                + Agregar Tienda
-                            </button>
-                        </div>
-                        <div class="text-center py-20 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
-                            <div
-                                class="bg-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm">
-                                <i data-lucide="shopping-bag" class="h-8 w-8 text-gray-300"></i>
-                            </div>
-                            <h3 class="text-gray-900 font-medium mb-1">Gestión de Tiendas</h3>
-                            <p class="text-gray-500 text-sm">Administración de tiendas de ropa, productos y proveedores.
-                            </p>
-                        </div>
+
                     </div>
 
-                    <!-- Comments Tab -->
-                    <div id="commentsTab" class="tab-content hidden">
-                        <h2 class="font-serif text-2xl font-bold text-gray-900 mb-6">Comentarios Pendientes</h2>
-                        <div id="commentsContainer" class="space-y-4">
-                            <!-- Injected -->
-                        </div>
-                    </div>
+                    <!-- ... (Existing code) ... -->
+                    <script src="/static/js/auth.js"></script>
+                    <script src="/static/js/api.js"></script>
+                    <script src="/static/js/components.js"></script>
+                    <script>
+                        // ... (Existing code) ...
+                        document.getElementById('salonForm').addEventListener('submit', async (e) => {
+                            e.preventDefault();
 
-                    <!-- Credits Tab -->
-                    <div id="creditsTab" class="tab-content hidden">
-                        <h2 class="font-serif text-2xl font-bold text-gray-900 mb-6">Agregar Créditos Manualmente</h2>
+                            // ... (Existing identifier logic) ...
+                            // Handle Client Identifier (Email or Phone)
+                            let identifier = document.getElementById('salonClientIdentifier').value.trim();
+                            const phoneCode = document.getElementById('salonPhoneCode').value;
 
-                        <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-8 flex items-start gap-3">
-                            <i data-lucide="info" class="h-5 w-5 text-amber-600 mt-0.5"></i>
-                            <div>
-                                <p class="text-amber-800 font-semibold text-sm">¿Buscas validar compras?</p>
-                                <p class="text-amber-700 text-xs">Si necesitas aprobar compras de créditos hechas por
-                                    usuarios, ve a la pestaña de <a href="#"
-                                        onclick="event.preventDefault(); switchTab('validations')"
-                                        class="underline hover:text-amber-900">Validaciones</a>.</p>
-                            </div>
-                        </div>
+                            // Simple heuristic: if it looks like a phone number (digits only or mostly digits), prepend code
+                            if (!identifier.includes('@') && /^\d+$/.test(identifier.replace(/\s/g, ''))) {
+                                identifier = phoneCode + identifier.replace(/\D/g, ''); // e.g. +525512345678
+                            }
 
-                        <div class="max-w-xl mx-auto bg-gray-50 p-8 rounded-3xl border border-gray-100">
-                            <!-- Search -->
-                            <div class="mb-6 relative">
-                                <label
-                                    class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Buscar
-                                    Profesional</label>
-                                <div class="relative">
-                                    <i data-lucide="search" class="absolute left-4 top-3 h-5 w-5 text-gray-400"></i>
-                                    <input type="text" id="searchProfessional" placeholder="Nombre o email..."
-                                        class="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 outline-none transition-all">
-                                </div>
-                                <div id="searchResults"
-                                    class="absolute z-10 w-full bg-white border border-gray-100 rounded-xl shadow-xl mt-2 hidden max-h-60 overflow-y-auto">
-                                </div>
-                            </div>
+                            const data = {
+                                client_identifier: identifier,
+                                client_name: document.getElementById('salonClientName').value,
+                                salon_name: document.getElementById('salonName').value,
+                                address: document.getElementById('salonAddress').value,
+                                city: document.getElementById('salonCity').value,
+                                state: document.getElementById('salonState').value,
+                                country: document.getElementById('salonCountry').value,
+                                start_date: document.getElementById('salonStartDate').value,
+                                payment_date: document.getElementById('salonPaymentDate').value,
+                                tokens_consumed: document.getElementById('salonTokens').value,
+                                password: document.getElementById('salonPassword').value // NEW FIELD
+                            };
 
-                            <form id="creditsForm" class="space-y-4">
-                                <div>
-                                    <label
-                                        class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">ID
-                                        Usuario</label>
-                                    <input type="number" id="professionalId" required readonly
-                                        class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-gray-500">
-                                    <p id="selectedProfessionalName"
-                                        class="text-sm text-blue-600 font-medium mt-2 ml-1"></p>
-                                </div>
-                                <div>
-                                    <label
-                                        class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Cantidad</label>
-                                    <input type="number" id="creditAmount" required min="1"
-                                        class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 outline-none transition-all">
-                                </div>
-                                <div>
-                                    <label
-                                        class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Motivo</label>
-                                    <textarea id="creditReason" rows="2"
-                                        class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 outline-none transition-all"></textarea>
-                                </div>
-                                <button type="submit"
-                                    class="w-full py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition font-bold shadow-lg shadow-blue-200 mt-4">
-                                    Procesar Recarga
-                                </button>
-                            </form>
-                        </div>
-                    </div>
+                            // ... (Existing submission) ...
 
-                    <!-- Validations Tab (Renamed from Transactions) -->
-                    <div id="validationsTab" class="tab-content hidden">
-                        <div class="grid md:grid-cols-2 gap-8">
-                            <!-- Pending Credits -->
-                            <div>
-                                <h2 class="font-serif text-2xl font-bold text-gray-900 mb-6">Recargas Pendientes</h2>
-                                <div id="transactionsContainer" class="space-y-4">
-                                    <!-- Injected -->
-                                </div>
-                            </div>
-                            <!-- Pending Withdrawals (Placeholder for now, can be implemented) -->
-                            <div>
-                                <h2 class="font-serif text-2xl font-bold text-gray-900 mb-6 font-serif">Retiros
-                                    Pendientes</h2>
-                                <div id="withdrawalsContainer" class="space-y-4">
-                                    <p class="text-center text-gray-400 py-12">No hay retiros pendientes.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Specialties Tab -->
-                    <div id="specialtiesTab" class="tab-content hidden">
-                        <h2 class="font-serif text-2xl font-bold text-gray-900 mb-6">Especialidades</h2>
-                        <div class="flex gap-4 mb-8">
-                            <input type="text" id="newSpecialtyInput" placeholder="Nombre de especialidad..."
-                                class="flex-1 px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 outline-none">
-                            <button onclick="addSpecialtyWrapper()"
-                                class="bg-emerald-500 text-white px-6 py-2 rounded-xl hover:bg-emerald-600 transition font-bold shadow-lg shadow-emerald-200">
-                                Agregar
-                            </button>
-                        </div>
-                        <div id="specialtiesList" class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                            <!-- Injected -->
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-        </main>
-    </div>
-
-    <script src="/static/js/auth.js"></script>
-    <script src="/static/js/api.js"></script>
-    <script src="/static/js/components.js"></script>
-
-    <script>
-        lucide.createIcons();
-
-        // Check Auth
-        document.addEventListener('DOMContentLoaded', async () => {
-            // Simple client-side check, robust verification happens in API calls
-            const user = getCurrentUser();
-            if (!user || user.role !== 'admin') {
-                // Redirecting... in a real app logic
-                // window.location.href = '/login'; 
-            }
-            if (user) document.getElementById('adminName').textContent = user.full_name;
-
-            // Initial Load
-            await loadDashboard();
-            switchTab('users'); // Default tab
-            loadUsers();
-        });
-
-        // Tab Switching Logic
-        function switchTab(tabName) {
-            // Hide all tabs
-            const tabs = ['users', 'salons', 'shops', 'comments', 'credits', 'validations', 'specialties'];
-            tabs.forEach(t => {
-                const el = document.getElementById(t + 'Tab');
-                if (el) el.classList.add('hidden');
-
-                const btn = document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1));
-                if (btn) {
-                    btn.classList.remove('border-blue-600', 'text-blue-600', 'bg-blue-50');
-                    btn.classList.add('border-transparent', 'text-gray-600');
-                }
-            });
-
-            // Show selected
-            const targetEl = document.getElementById(tabName + 'Tab');
-            if (targetEl) targetEl.classList.remove('hidden');
-
-            const targetBtn = document.getElementById('tab' + tabName.charAt(0).toUpperCase() + tabName.slice(1));
-            if (targetBtn) {
-                targetBtn.classList.add('border-blue-600', 'text-blue-600', 'bg-blue-50');
-                targetBtn.classList.remove('border-transparent', 'text-gray-600');
-            }
-
-            // Lazy Load Data
-            if (tabName === 'comments') loadPendingComments();
-            if (tabName === 'validations') {
-                loadPendingTransactions();
-                // loadPendingWithdrawals(); // Future TODO
-            }
-            if (tabName === 'specialties') loadSpecialties();
-            if (tabName === 'salons') loadSalons();
-        }
-
-        // --- SALONS LOGIC ---
-        function openSalonModal() { document.getElementById('salonModal').classList.remove('hidden'); }
-        function closeSalonModal() { document.getElementById('salonModal').classList.add('hidden'); }
-
-        async function loadSalons() {
-            const tbody = document.getElementById('salonsTableBody');
-            tbody.innerHTML = '<tr><td colspan="5" class="py-8 text-center text-gray-400">Cargando salones...</td></tr>';
-
-            const res = await apiGet('/admin/salones');
-            if (res.success && res.data.salons.length > 0) {
-                tbody.innerHTML = res.data.salons.map(s => `
-                    <tr class="border-b border-gray-50 hover:bg-gray-50 transition-colors">
-                        <td class="py-4 font-medium">
-                            <div class="flex flex-col">
-                                <span class="text-gray-900">${s.salon_name}</span>
-                                <span class="text-xs text-gray-500 max-w-[200px] truncate" title="${s.address}, ${s.city}, ${s.state}">
-                                    ${s.address}<br>
-                                    ${s.city}, ${s.state}, ${s.country}
-                                </span>
-                            </div>
-                        </td>
-                        <td class="py-4">
-                             <div class="flex flex-col">
-                                <span class="text-gray-900 text-sm">${s.client_name}</span>
-                                <span class="text-xs text-blue-500">${s.email}</span>
-                            </div>
-                        </td>
-                        <td class="py-4 text-xs text-gray-500">
-                             <p>Inicio: ${s.start_date || '-'}</p>
-                             <p>Cobro: ${s.payment_date || '-'}</p>
-                        </td>
-                        <td class="py-4 text-sm">
-                            <span class="font-bold text-gray-700">${s.user_tokens_used || 0}</span>
-                            <span class="text-gray-400">/ ${s.user_tokens_limit || '∞'}</span>
-                        </td>
-                        <td class="py-4 text-right">
-                             <button onclick="deleteSalon(${s.id})" class="text-rose-400 hover:text-rose-600 transition p-2"><i data-lucide="trash-2" class="h-4 w-4"></i></button>
-                        </td>
-                    </tr>
-                `).join('');
-                lucide.createIcons();
-            } else {
-                tbody.innerHTML = '<tr><td colspan="5" class="py-8 text-center text-gray-400">No hay salones registrados.</td></tr>';
-            }
-        }
-
-        // Initialize Dropdowns
-        document.addEventListener('DOMContentLoaded', () => {
-            if (typeof populateCountries === 'function') {
-                populateCountries('salonCountry');
-                populatePhoneCodes('salonPhoneCode');
-
-                // Event Listeners for cascading
-                document.getElementById('salonCountry').addEventListener('change', function () {
-                    loadStatesForCountry(this.value, this.dataset.targetState);
-                });
-                document.getElementById('salonState').addEventListener('change', function () {
-                    loadCitiesForState(document.getElementById('salonCountry').value, this.value, this.dataset.targetCity);
-                });
-            }
-        });
-
-        document.getElementById('salonForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            // Handle Client Identifier (Email or Phone)
-            let identifier = document.getElementById('salonClientIdentifier').value.trim();
-            const phoneCode = document.getElementById('salonPhoneCode').value;
-
-            // Simple heuristic: if it looks like a phone number (digits only or mostly digits), prepend code
-            // If it has '@', treat as email and ignore code
-            if (!identifier.includes('@') && /^\d+$/.test(identifier.replace(/\s/g, ''))) {
-                identifier = phoneCode + identifier.replace(/\D/g, ''); // e.g. +525512345678
-            }
-
-            const data = {
-                client_identifier: identifier,
-                client_name: document.getElementById('salonClientName').value,
-                salon_name: document.getElementById('salonName').value,
-                address: document.getElementById('salonAddress').value,
-                city: document.getElementById('salonCity').value,
-                state: document.getElementById('salonState').value,
-                country: document.getElementById('salonCountry').value,
-                start_date: document.getElementById('salonStartDate').value,
-                payment_date: document.getElementById('salonPaymentDate').value,
-                tokens_consumed: document.getElementById('salonTokens').value
-            };
-
-            const res = await apiPost('/admin/salones', data);
-            if (res.success) {
-                alert('Salón creado exitosamente');
-                closeSalonModal();
-                e.target.reset();
-                // Reset dropdowns
-                populateCountries('salonCountry');
-                loadSalons();
-            } else {
-                alert('Error: ' + res.error);
-            }
-        });
-
-        async function deleteSalon(id) {
-            if (confirm('¿Seguro que desea eliminar este salón?')) {
-                const res = await apiDelete(`/admin/salones/${id}`);
-                if (res.success) loadSalons();
-                else alert(res.error);
-            }
-        }
+                            async function deleteSalon(id) {
+                                if (confirm('¿Seguro que desea eliminar este salón?')) {
+                                    const res = await apiDelete(`/admin/salones/${id}`);
+                                    if (res.success) loadSalons();
+                                    else alert(res.error);
+                                }
+                            }
 
 
-        // --- Data Loading Functions ---
+                            // --- Data Loading Functions ---
 
-        async function loadDashboard() {
-            const result = await getAdminDashboard();
-            if (result.success) {
-                document.getElementById('statUsers').textContent = result.data.users?.total || 0;
-                // Assuming API returns 'professionals' count separate or filtered
-                document.getElementById('statProfessionals').textContent = result.data.users?.professionals_count || result.data.professionals?.total || 0;
+                            async function loadDashboard() {
+                                const result = await getAdminDashboard();
+                                if (result.success) {
+                                    document.getElementById('statUsers').textContent = result.data.users?.total || 0;
+                                    // Assuming API returns 'professionals' count separate or filtered
+                                    document.getElementById('statProfessionals').textContent = result.data.users?.professionals_count || result.data.professionals?.total || 0;
 
-                const pending = (result.data.pending?.comments || 0) + (result.data.pending?.payments || 0) + (result.data.pending?.withdrawals || 0);
-                document.getElementById('statPending').textContent = pending;
-                document.getElementById('statRevenue').textContent = formatCurrency(result.data.revenue?.total_mxn || 0);
-            }
-        }
+                                    const pending = (result.data.pending?.comments || 0) + (result.data.pending?.payments || 0) + (result.data.pending?.withdrawals || 0);
+                                    document.getElementById('statPending').textContent = pending;
+                                    document.getElementById('statRevenue').textContent = formatCurrency(result.data.revenue?.total_mxn || 0);
+                                }
+                            }
 
-        async function loadUsers() {
-            const role = document.getElementById('userRoleFilter').value;
-            const tbody = document.getElementById('usersTableBody');
-            tbody.innerHTML = '<tr><td colspan="5" class="py-8 text-center text-gray-400">Cargando...</td></tr>';
+                            async function loadUsers() {
+                                const role = document.getElementById('userRoleFilter').value;
+                                const tbody = document.getElementById('usersTableBody');
+                                tbody.innerHTML = '<tr><td colspan="5" class="py-8 text-center text-gray-400">Cargando...</td></tr>';
 
-            try {
-                // Determine API endpoint filter based on local logic or backend support
-                // For now assuming the backend filter logic supports 'role' param or we filter client side if needed
-                const result = await apiGet(`/admin/usuarios?role=${role === 'all' ? '' : role}`);
+                                try {
+                                    // Determine API endpoint filter based on local logic or backend support
+                                    // For now assuming the backend filter logic supports 'role' param or we filter client side if needed
+                                    const result = await apiGet(`/admin/usuarios?role=${role === 'all' ? '' : role}`);
 
-                if (result.success && result.data.users) {
-                    if (result.data.users.length === 0) {
-                        tbody.innerHTML = '<tr><td colspan="5" class="py-8 text-center text-gray-400">No se encontraron usuarios.</td></tr>';
-                        return;
-                    }
+                                    if (result.success && result.data.users) {
+                                        if (result.data.users.length === 0) {
+                                            tbody.innerHTML = '<tr><td colspan="5" class="py-8 text-center text-gray-400">No se encontraron usuarios.</td></tr>';
+                                            return;
+                                        }
 
-                    tbody.innerHTML = result.data.users.map(u => {
-                        const statusColor = u.subscription_status === 'active' ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-500';
-                        return `
+                                        tbody.innerHTML = result.data.users.map(u => {
+                                            const statusColor = u.subscription_status === 'active' ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-500';
+                                            return `
                         <tr class="border-b border-gray-50 hover:bg-gray-50 transition-colors">
                             <td class="py-4 font-medium">
                                 <div class="flex flex-col">
@@ -803,20 +565,20 @@
                             </td>
                         </tr>
                         `;
-                    }).join('');
-                }
-            } catch (e) {
-                console.error(e);
-                tbody.innerHTML = '<tr><td colspan="5" class="py-8 text-center text-rose-500">Error al cargar usuarios.</td></tr>';
-            }
-        }
+                                        }).join('');
+                                    }
+                                } catch (e) {
+                                    console.error(e);
+                                    tbody.innerHTML = '<tr><td colspan="5" class="py-8 text-center text-rose-500">Error al cargar usuarios.</td></tr>';
+                                }
+                            }
 
-        async function loadPendingComments() {
-            const container = document.getElementById('commentsContainer');
-            const result = await getPendingComments();
+                            async function loadPendingComments() {
+                                const container = document.getElementById('commentsContainer');
+                                const result = await getPendingComments();
 
-            if (result.success && result.data.comments && result.data.comments.length > 0) {
-                container.innerHTML = result.data.comments.map(c => `
+                                if (result.success && result.data.comments && result.data.comments.length > 0) {
+                                    container.innerHTML = result.data.comments.map(c => `
                     <div class="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
                         <div class="flex justify-between items-start mb-4">
                             <div>
@@ -832,28 +594,28 @@
                         </div>
                     </div>
                 `).join('');
-            } else {
-                container.innerHTML = `<p class="text-center text-gray-400 py-12">No hay comentarios pendientes.</p>`;
-            }
-        }
+                                } else {
+                                    container.innerHTML = `<p class="text-center text-gray-400 py-12">No hay comentarios pendientes.</p>`;
+                                }
+                            }
 
-        // Reuse approve/reject functions from API logic (Assuming defined in current scope or inline)
-        async function approveComment(id) {
-            const res = await updateCommentStatus(id, 'approved');
-            if (res.success) { loadPendingComments(); loadDashboard(); }
-        }
-        async function rejectComment(id) {
-            const res = await updateCommentStatus(id, 'rejected');
-            if (res.success) { loadPendingComments(); loadDashboard(); }
-        }
+                            // Reuse approve/reject functions from API logic (Assuming defined in current scope or inline)
+                            async function approveComment(id) {
+                                const res = await updateCommentStatus(id, 'approved');
+                                if (res.success) { loadPendingComments(); loadDashboard(); }
+                            }
+                            async function rejectComment(id) {
+                                const res = await updateCommentStatus(id, 'rejected');
+                                if (res.success) { loadPendingComments(); loadDashboard(); }
+                            }
 
-        async function loadPendingTransactions() {
-            const container = document.getElementById('transactionsContainer');
-            const result = await apiGet('/admin/transacciones'); // Helper from earlier steps potentially
+                            async function loadPendingTransactions() {
+                                const container = document.getElementById('transactionsContainer');
+                                const result = await apiGet('/admin/transacciones'); // Helper from earlier steps potentially
 
-            // Fallback rendering
-            if (result.success && result.data.transactions && result.data.transactions.length > 0) {
-                container.innerHTML = result.data.transactions.map(tx => `
+                                // Fallback rendering
+                                if (result.success && result.data.transactions && result.data.transactions.length > 0) {
+                                    container.innerHTML = result.data.transactions.map(tx => `
                     <div class="flex items-center justify-between bg-white border border-gray-100 rounded-2xl p-4 shadow-sm">
                         <div class="flex items-center gap-4">
                             <div class="h-10 w-10 bg-amber-50 text-amber-500 rounded-full flex items-center justify-center">
@@ -874,106 +636,126 @@
                         </div>
                     </div>
                 `).join('');
-                lucide.createIcons();
-            } else {
-                container.innerHTML = `<p class="text-center text-gray-400 py-12">No hay recargas pendientes.</p>`;
-            }
-        }
+                                    lucide.createIcons();
+                                } else {
+                                    container.innerHTML = `<p class="text-center text-gray-400 py-12">No hay recargas pendientes.</p>`;
+                                }
+                            }
 
-        // Mock approve/reject tx if not globally defined
-        async function approveTransaction(id) {
-            await apiPost(`/admin/transacciones/${id}/aprobar`);
-            loadPendingTransactions();
-        }
-        async function rejectTransaction(id) {
-            await apiPost(`/admin/transacciones/${id}/rechazar`);
-            loadPendingTransactions();
-        }
+                            // Mock approve/reject tx if not globally defined
+                            async function approveTransaction(id) {
+                                await apiPost(`/admin/transacciones/${id}/aprobar`);
+                                loadPendingTransactions();
+                            }
+                            async function rejectTransaction(id) {
+                                await apiPost(`/admin/transacciones/${id}/rechazar`);
+                                loadPendingTransactions();
+                            }
 
-        async function loadSpecialties() {
-            const container = document.getElementById('specialtiesList');
-            const res = await apiGet('/admin/especialidades');
+                            async function loadSpecialties() {
+                                const container = document.getElementById('specialtiesList');
+                                const res = await apiGet('/admin/especialidades');
 
-            if (res.success && res.data.specialties) {
-                container.innerHTML = res.data.specialties.map(s => `
+                                if (res.success && res.data.specialties) {
+                                    container.innerHTML = res.data.specialties.map(s => `
                     <div class="flex justify-between items-center bg-gray-50 p-3 rounded-xl border border-gray-100">
                         <span class="text-sm font-bold text-gray-700">${s.name}</span>
                         <button onclick="deleteSpecialty(${s.id})" class="text-rose-400 hover:text-rose-600 transition"><i data-lucide="trash-2" class="h-4 w-4"></i></button>
                     </div>
                  `).join('');
-                lucide.createIcons();
-            }
-        }
+                                    lucide.createIcons();
+                                }
+                            }
 
-        async function addSpecialtyWrapper() {
-            const input = document.getElementById('newSpecialtyInput');
-            if (input.value.trim()) {
-                await apiPost('/admin/especialidades', { name: input.value.trim() });
-                input.value = '';
-                loadSpecialties();
-            }
-        }
+                            async function addSpecialtyWrapper() {
+                                const input = document.getElementById('newSpecialtyInput');
+                                if (input.value.trim()) {
+                                    await apiPost('/admin/especialidades', { name: input.value.trim() });
+                                    input.value = '';
+                                    loadSpecialties();
+                                }
+                            }
 
-        async function deleteSpecialty(id) {
-            if (confirm('Eliminar especialidad?')) {
-                await apiDelete(`/admin/especialidades/${id}`);
-                loadSpecialties();
-            }
-        }
+                            async function deleteSpecialty(id) {
+                                if (confirm('Eliminar especialidad?')) {
+                                    await apiDelete(`/admin/especialidades/${id}`);
+                                    loadSpecialties();
+                                }
+                            }
 
-        // Search Professional Logic (Simplified)
-        const searchInput = document.getElementById('searchProfessional');
-        const searchResults = document.getElementById('searchResults');
-        let searchTimeout;
+                            // Search Professional Logic (Simplified)
+                            const searchInput = document.getElementById('searchProfessional');
+                            const searchResults = document.getElementById('searchResults');
+                            let searchTimeout;
 
-        if (searchInput) {
-            searchInput.addEventListener('input', (e) => {
-                clearTimeout(searchTimeout);
-                const query = e.target.value;
-                if (query.length < 2) { searchResults.classList.add('hidden'); return; }
+                            if (searchInput) {
+                                searchInput.addEventListener('input', (e) => {
+                                    clearTimeout(searchTimeout);
+                                    const query = e.target.value;
+                                    if (query.length < 2) { searchResults.classList.add('hidden'); return; }
 
-                searchTimeout = setTimeout(async () => {
-                    const res = await apiGet(`/admin/profesionales/buscar?q=${encodeURIComponent(query)}`);
-                    if (res.success && res.data.professionals.length > 0) {
-                        searchResults.innerHTML = res.data.professionals.map(p => `
+                                    searchTimeout = setTimeout(async () => {
+                                        const res = await apiGet(`/admin/profesionales/buscar?q=${encodeURIComponent(query)}`);
+                                        if (res.success && res.data.professionals.length > 0) {
+                                            searchResults.innerHTML = res.data.professionals.map(p => `
                             <div onclick="selectProfessional(${p.id}, '${p.full_name}')" class="p-3 hover:bg-blue-50 cursor-pointer border-b border-gray-50 last:border-0 transition-colors">
                                 <p class="font-bold text-sm text-gray-900">${p.full_name}</p>
                                 <p class="text-xs text-gray-500">${p.email}</p>
                             </div>
                          `).join('');
-                        searchResults.classList.remove('hidden');
-                    } else {
-                        searchResults.innerHTML = '<div class="p-3 text-xs text-gray-400">No encontrado</div>';
-                        searchResults.classList.remove('hidden');
-                    }
-                }, 300);
-            });
-        }
+                                            searchResults.classList.remove('hidden');
+                                        } else {
+                                            searchResults.innerHTML = '<div class="p-3 text-xs text-gray-400">No encontrado</div>';
+                                            searchResults.classList.remove('hidden');
+                                        }
+                                    }, 300);
+                                });
+                            }
 
-        function selectProfessional(id, name) {
-            document.getElementById('professionalId').value = id;
-            document.getElementById('selectedProfessionalName').textContent = name;
-            searchResults.classList.add('hidden');
-            searchInput.value = '';
-        }
+                            function selectProfessional(id, name) {
+                                document.getElementById('professionalId').value = id;
+                                document.getElementById('selectedProfessionalName').textContent = name;
+                                searchResults.classList.add('hidden');
+                                searchInput.value = '';
+                                // ... (Existing submission) ...
+                                const res = await apiPost('/admin/salones', data);
+                                if (res.success) {
+                                    alert('Salón creado exitosamente');
+                                    closeSalonModal();
+                                    e.target.reset();
+                                    // Reset dropdowns
+                                    populateCountries('salonCountry');
+                                    loadSalons();
+                                } else {
+                                    alert('Error: ' + res.error);
+                                }
+                            });
 
-        document.getElementById('creditsForm')?.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const id = document.getElementById('professionalId').value;
-            const amount = document.getElementById('creditAmount').value;
-            const reason = document.getElementById('creditReason').value;
+                        async function deleteSalon(id) {
+                            if (confirm('¿Seguro que desea eliminar este salón?')) {
+                                const res = await apiDelete(`/admin/salones/${id}`);
+                                if (res.success) loadSalons();
+                                else alert(res.error);
+                            }
+                        }
 
-            const res = await apiPost(`/admin/creditos/${id}`, { amount, reason });
-            if (res.success) {
-                alert('Créditos agregados');
-                e.target.reset();
-                document.getElementById('selectedProfessionalName').textContent = '';
-            } else {
-                alert('Error: ' + res.error);
-            }
-        });
+                        document.getElementById('creditsForm')?.addEventListener('submit', async (e) => {
+                            e.preventDefault();
+                            const id = document.getElementById('professionalId').value;
+                            const amount = document.getElementById('creditAmount').value;
+                            const reason = document.getElementById('creditReason').value;
 
-    </script>
+                            const res = await apiPost(`/admin/creditos/${id}`, { amount, reason });
+                            if (res.success) {
+                                alert('Créditos agregados');
+                                e.target.reset();
+                                document.getElementById('selectedProfessionalName').textContent = '';
+                            } else {
+                                alert('Error: ' + res.error);
+                            }
+                        });
+
+                    </script>
 </body>
 
 </html>
