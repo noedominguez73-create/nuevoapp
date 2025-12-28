@@ -69,7 +69,7 @@ async function login(email, password) {
 // Register function
 async function register(userData) {
     try {
-        const response = await fetch('/api/auth/registro', {
+        const response = await fetch('/api/auth/register', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
