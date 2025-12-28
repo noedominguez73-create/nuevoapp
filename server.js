@@ -68,6 +68,22 @@ try {
         console.error("   ❌ Directory 'database' is NOT WRITABLE:", e.message);
     }
 
+    // Check File Write & Fix
+    if (fs.existsSync(dbFile)) {
+        try {
+            fs.accessSync(dbFile, fs.constants.W_OK);
+            console.log("   ✅ Database file is WRITABLE.");
+        } catch (e) {
+            console.warn("   ⚠️ Database file is READ-ONLY. Attempting automatic fix...");
+            try {
+                fs.chmodSync(dbFile, 0o666);
+                console.log("   ✅ FIXED: Permissions updated to 0o666.");
+            } catch (err) {
+                console.error("   ❌ FIX FAILED: Could not chmod database:", err.message);
+            }
+        }
+    }
+
     // Check File Write (if exists)
     if (fs.existsSync(dbFile)) {
         try {
