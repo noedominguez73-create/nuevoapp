@@ -6,6 +6,8 @@ import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { sequelize } from './src/config/database.js';
 import { setupRoutes } from './src/routes/index.js';
+import { User, SalonConfig } from './src/models/index.js';
+import bcrypt from 'bcryptjs';
 
 // Configuration
 dotenv.config();
@@ -49,9 +51,43 @@ app.use('/static', express.static(path.join(__dirname, 'app/static')));
 app.use('/', express.static(path.join(__dirname, 'app/templates')));
 
 
-// Initialize DB
-sequelize.sync({ alter: true }).then(() => {
+// Initialize DB and SEED Default Admin
+sequelize.sync({ alter: true }).then(async () => {
     console.log('Database synced successfully.');
+
+    // --- SEEDER LOGIC ---
+    try {
+        const userCount = await User.count();
+        if (userCount === 0) {
+            console.log("🌱 Fresh Database detected. Seeding Default Admin...");
+            const hashedPassword = await bcrypt.hash('admin123', 10);
+
+            // Create Admin User (ID 1)
+            const admin = await User.create({
+                email: 'admin@imagina.ia',
+                password_hash: hashedPassword,
+                full_name: 'Admin Mirror',
+                role: 'admin',
+                monthly_token_limit: 1000,
+                current_month_tokens: 0
+            });
+            console.log("✅ Admin User Created:", admin.email);
+
+            // Create Default Salon Config for Admin
+            await SalonConfig.create({
+                user_id: admin.id, // Should be 1
+                stylist_name: 'Asesora IA',
+                primary_color: '#00ff88',
+                secondary_color: '#00ccff',
+                stylist_voice_name: 'Aoede',
+                is_active: true
+            });
+            console.log("✅ Default SalonConfig Created.");
+        }
+    } catch (seedErr) {
+        console.error("⚠️ Error seeding database:", seedErr);
+    }
+
 }).catch((err) => {
     console.error('Failed to sync database:', err);
 });
