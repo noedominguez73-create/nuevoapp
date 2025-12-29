@@ -11,6 +11,12 @@ const MirrorItem = sequelize.define('MirrorItem', {
     name: DataTypes.STRING(100),
     description: DataTypes.TEXT,
     image_url: DataTypes.STRING(500),
+    prompt: DataTypes.TEXT,
+    color_code: DataTypes.STRING(20),
+    order_index: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0
+    },
     price: DataTypes.DECIMAL(10, 2),
     is_active: {
         type: DataTypes.BOOLEAN,
