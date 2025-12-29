@@ -4,161 +4,140 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Administración - CompletMirror.io</title>
+    <title>Panel de Administración | Mirror IA</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="/static/js/auth.js"></script>
-    <script src="/static/js/api.js"></script>
-    <script src="/static/js/locations.js"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <link rel="stylesheet" href="/static/css/style.css">
-
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap"
         rel="stylesheet">
-
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
+            background-color: #FAFAFA;
         }
 
+        h1,
+        h2,
+        h3,
         .font-serif {
             font-family: 'Playfair Display', serif;
         }
 
-        /* Tab Transitions */
-        .tab-content {
-            transition: opacity 0.2s ease-in-out;
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #d1d5db;
+            border-radius: 4px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #9ca3af;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.4s ease-out forwards;
         }
     </style>
 </head>
 
-<body class="bg-[#FAFAFA] flex h-screen overflow-hidden text-slate-800">
-    <aside class="w-64 bg-white border-r h-full flex flex-col hidden md:flex">
-        <div class="p-6 border-b flex items-center gap-2">
-            <i data-lucide="sparkles" class="h-6 w-6 text-blue-600"></i>
-            <h1 class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">
-                CompletMirror.io</h1>
-        </div>
-        <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
-            <a href="/dashboard-profesional"
-                class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-blue-50 hover:text-blue-600 rounded-xl transition group">
-                <span class="text-xl group-hover:scale-110 transition-transform">📊</span>
-                <span class="font-medium">Dashboard</span>
-            </a>
+<body class="text-gray-800">
 
-            <!-- Mis Finanzas Section -->
-            <div class="mt-4 mb-2 px-4 text-xs font-bold text-slate-400 uppercase">Mis Finanzas</div>
-            <a href="/mis-finanzas"
-                class="flex items-center gap-3 px-4 py-2 text-slate-600 hover:bg-blue-50 hover:text-blue-600 rounded-xl transition group">
-                <span class="text-lg">🏠</span>
-                <span class="font-medium">Inicio</span>
-            </a>
-            <a href="/mis-finanzas/ingresos"
-                class="flex items-center gap-3 px-4 py-2 text-slate-600 hover:bg-emerald-50 hover:text-emerald-600 rounded-xl transition group">
-                <span class="text-lg">💰</span>
-                <span class="font-medium">Bancos</span>
-            </a>
-            <a href="/mis-finanzas/facturas"
-                class="flex items-center gap-3 px-4 py-2 text-slate-600 hover:bg-rose-50 hover:text-rose-600 rounded-xl transition group">
-                <span class="text-lg">🧾</span>
-                <span class="font-medium">Gastos</span>
-            </a>
-            <a href="/mis-finanzas/pagos"
-                class="flex items-center gap-3 px-4 py-2 text-slate-600 hover:bg-orange-50 hover:text-orange-600 rounded-xl transition group">
-                <span class="text-lg">💳</span>
-                <span class="font-medium">Pagos</span>
-            </a>
-            <a href="/mis-finanzas/pendientes"
-                class="flex items-center gap-3 px-4 py-2 text-slate-600 hover:bg-yellow-50 hover:text-yellow-600 rounded-xl transition group">
-                <span class="text-lg">⏳</span>
-                <span class="font-medium">Pendientes</span>
-            </a>
-            <a href="/mis-finanzas/reportes"
-                class="flex items-center gap-3 px-4 py-2 text-slate-600 hover:bg-purple-50 hover:text-purple-600 rounded-xl transition group">
-                <span class="text-lg">📈</span>
-                <span class="font-medium">Reportes</span>
-            </a>
-
-            <div class="border-t border-slate-100 my-2 pt-2">
-                <p class="px-4 text-xs font-bold text-slate-400 uppercase mb-2">Herramientas</p>
-                <a href="/cambio_de_imagen"
-                    class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-pink-50 hover:text-pink-600 rounded-xl transition group">
-                    <span class="text-xl group-hover:scale-110 transition-transform">🎨</span>
-                    <span class="font-medium">Cambio de Imagen</span>
-                </a>
-                <a href="/closet"
-                    class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-purple-50 hover:text-purple-600 rounded-xl transition group">
-                    <span class="text-xl group-hover:scale-110 transition-transform">👗</span>
-                    <span class="font-medium">Mi Closet IA</span>
-                </a>
-                <a href="/mirror"
-                    class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-indigo-50 hover:text-indigo-600 rounded-xl transition group">
-                    <span class="text-xl group-hover:scale-110 transition-transform">🪞</span>
-                    <span class="font-medium">Mirror IA</span>
-                </a>
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <aside class="hidden md:flex flex-col w-64 bg-white border-r border-gray-100 h-full fixed left-0 top-0 z-10">
+            <div class="p-8">
+                <a href="#"
+                    class="block text-2xl font-serif font-bold text-blue-600 tracking-tight mb-1">CompletMirror.io</a>
             </div>
-        </nav>
-        <div class="px-4 py-3 border-t bg-slate-50 flex flex-col gap-2">
-            <!-- User Identity Payload -->
-            <div id="sidebarUserIdentity"
-                class="flex items-center gap-3 px-2 py-2 mb-1 rounded-lg bg-white border border-slate-100 shadow-sm">
-                <div
-                    class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-sm">
-                    <i class="fas fa-user-circle"></i>
+            <nav class="flex-1 px-4 space-y-2 overflow-y-auto">
+                <a href="#" onclick="location.reload()"
+                    class="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl bg-blue-50 text-blue-600 transition-all">
+                    <i data-lucide="layout-dashboard" class="h-5 w-5"></i> Dashboard
+                </a>
+                <div class="pt-4 pb-2 px-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Mis Finanzas</div>
+                <a href="/"
+                    class="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl text-gray-600 hover:bg-gray-50 transition-all">
+                    <i data-lucide="home" class="h-5 w-5 text-orange-500"></i> Inicio
+                </a>
+                <a href="#"
+                    class="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl text-gray-600 hover:bg-gray-50 transition-all">
+                    <i data-lucide="landmark" class="h-5 w-5 text-amber-500"></i> Bancos
+                </a>
+                <a href="#"
+                    class="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl text-gray-600 hover:bg-gray-50 transition-all">
+                    <i data-lucide="receipt" class="h-5 w-5 text-purple-400"></i> Gastos
+                </a>
+                <a href="#"
+                    class="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl text-gray-600 hover:bg-gray-50 transition-all">
+                    <i data-lucide="credit-card" class="h-5 w-5 text-blue-400"></i> Pagos
+                </a>
+                <a href="#"
+                    class="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl text-gray-600 hover:bg-gray-50 transition-all">
+                    <i data-lucide="hourglass" class="h-5 w-5 text-amber-500"></i> Pendientes
+                </a>
+                <a href="#"
+                    class="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl text-gray-600 hover:bg-gray-50 transition-all">
+                    <i data-lucide="bar-chart-3" class="h-5 w-5 text-indigo-400"></i> Reportes
+                </a>
+            </nav>
+            <div class="p-4 border-t border-gray-100">
+                <div class="flex items-center gap-3 p-3 rounded-xl bg-gray-50">
+                    <div
+                        class="h-10 w-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">
+                        A</div>
+                    <div class="overflow-hidden">
+                        <p class="text-sm font-bold text-gray-900 truncate">Admin Mirror</p>
+                        <p class="text-xs text-gray-500 truncate">admin@imagina.ia</p>
+                    </div>
                 </div>
-                <div class="flex-1 min-w-0">
-                    <p id="sidebarUserName" class="text-sm font-bold text-slate-700 truncate">Usuario</p>
-                    <p id="sidebarUserEmail" class="text-xs text-slate-400 truncate">...</p>
-                </div>
+                <button onclick="logout()"
+                    class="mt-4 w-full flex items-center justify-center gap-2 text-rose-500 text-xs font-bold hover:text-rose-700 transition">
+                    <span class="w-1 h-4 bg-rose-500 rounded-full"></span> Cerrar Sesión
+                </button>
             </div>
+        </aside>
 
-            <button onclick="logout()"
-                class="w-full px-4 py-2 text-red-600 hover:bg-red-100 rounded-xl transition flex items-center justify-center gap-2 font-medium text-sm">
-                <span>🚪</span> Cerrar Sesión
-            </button>
-        </div>
-
-        <script>
-            document.addEventListener('DOMContentLoaded', () => {
-                // 1. Populate User Info
-                const userStr = localStorage.getItem('asesoriaimss_user');
-                if (userStr) {
-                    const user = JSON.parse(userStr);
-                    const nameEl = document.getElementById('sidebarUserName');
-                    const emailEl = document.getElementById('sidebarUserEmail');
-
-                    if (nameEl) nameEl.textContent = user.full_name || 'Usuario';
-                    if (emailEl) emailEl.textContent = user.email || '';
-                }
-            });
-            function logout() {
-                localStorage.removeItem('asesoriaimss_token');
-                localStorage.removeItem('asesoriaimss_user');
-                window.location.href = '/login';
-            }
-        </script>
-    </aside>
-
-    <div class="flex-1 flex flex-col min-w-0 overflow-hidden relative">
-        <main class="flex-1 overflow-y-auto p-6 md:p-12 scroll-smooth">
-            <div class="max-w-7xl mx-auto space-y-8 animate-fade-in">
-
-                <!-- Header -->
+        <!-- Main Content -->
+        <main class="flex-1 md:ml-64 h-full overflow-y-auto bg-[#FAFAFA]">
+            <div class="p-8 max-w-7xl mx-auto">
                 <div class="flex justify-between items-end mb-8">
                     <div>
                         <h1 class="font-serif text-3xl text-gray-900 font-bold mb-2">Panel de Administración</h1>
                         <p class="text-gray-500">Gestión global de la plataforma.</p>
                     </div>
                     <div class="flex items-center gap-4">
-                        <span id="adminName" class="text-gray-700 font-medium"></span>
+                        <span id="adminNameDisplay" class="text-gray-700 font-medium"></span>
                     </div>
                 </div>
 
                 <!-- Stats Dashboard -->
                 <div class="grid md:grid-cols-4 gap-6 mb-8">
+                    <!-- Total Users -->
                     <div onclick="switchTab('users'); document.getElementById('userRoleFilter').value='all'; loadUsers();"
                         class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-all cursor-pointer group">
                         <div class="flex items-center justify-between">
@@ -175,6 +154,7 @@
                             </div>
                         </div>
                     </div>
+                    <!-- Professionals -->
                     <div onclick="switchTab('users'); document.getElementById('userRoleFilter').value='professional'; loadUsers();"
                         class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-all cursor-pointer group">
                         <div class="flex items-center justify-between">
@@ -191,6 +171,7 @@
                             </div>
                         </div>
                     </div>
+                    <!-- Validations -->
                     <div onclick="switchTab('validations')"
                         class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-all cursor-pointer group">
                         <div class="flex items-center justify-between">
@@ -207,6 +188,7 @@
                             </div>
                         </div>
                     </div>
+                    <!-- Revenue -->
                     <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
                         <div class="flex items-center justify-between">
                             <div>
@@ -225,537 +207,478 @@
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-8">
                     <div class="flex overflow-x-auto custom-scrollbar">
                         <button id="tabUsers" onclick="switchTab('users')"
-                            class="tab-btn px-6 py-4 text-sm font-semibold text-gray-600 hover:bg-gray-50 border-b-2 border-transparent transition-all whitespace-nowrap">
-                            Usuarios
-                        </button>
+                            class="tab-btn px-6 py-4 text-sm font-semibold text-gray-600 hover:bg-gray-50 border-b-2 border-transparent transition-all whitespace-nowrap">Usuarios</button>
                         <button id="tabSalons" onclick="switchTab('salons')"
-                            class="tab-btn px-6 py-4 text-sm font-semibold text-gray-600 hover:bg-gray-50 border-b-2 border-transparent transition-all whitespace-nowrap">
-                            Salones
-                        </button>
+                            class="tab-btn px-6 py-4 text-sm font-semibold text-gray-600 hover:bg-gray-50 border-b-2 border-transparent transition-all whitespace-nowrap">Salones</button>
                         <button id="tabShops" onclick="switchTab('shops')"
-                            class="tab-btn px-6 py-4 text-sm font-semibold text-gray-600 hover:bg-gray-50 border-b-2 border-transparent transition-all whitespace-nowrap">
-                            Tiendas
-                        </button>
+                            class="tab-btn px-6 py-4 text-sm font-semibold text-gray-600 hover:bg-gray-50 border-b-2 border-transparent transition-all whitespace-nowrap">Tiendas</button>
                         <button id="tabComments" onclick="switchTab('comments')"
-                            class="tab-btn px-6 py-4 text-sm font-semibold text-gray-600 hover:bg-gray-50 border-b-2 border-transparent transition-all whitespace-nowrap">
-                            Comentarios
-                        </button>
+                            class="tab-btn px-6 py-4 text-sm font-semibold text-gray-600 hover:bg-gray-50 border-b-2 border-transparent transition-all whitespace-nowrap">Comentarios</button>
                         <button id="tabCredits" onclick="switchTab('credits')"
-                            class="tab-btn px-6 py-4 text-sm font-semibold text-gray-600 hover:bg-gray-50 border-b-2 border-transparent transition-all whitespace-nowrap">
-                            Agregar Créditos
-                        </button>
+                            class="tab-btn px-6 py-4 text-sm font-semibold text-gray-600 hover:bg-gray-50 border-b-2 border-transparent transition-all whitespace-nowrap">Agregar
+                            Créditos</button>
                         <button id="tabValidations" onclick="switchTab('validations')"
-                            class="tab-btn px-6 py-4 text-sm font-semibold text-gray-600 hover:bg-gray-50 border-b-2 border-transparent transition-all whitespace-nowrap">
-                            Validaciones
-                        </button>
+                            class="tab-btn px-6 py-4 text-sm font-semibold text-gray-600 hover:bg-gray-50 border-b-2 border-transparent transition-all whitespace-nowrap">Validaciones</button>
                         <button id="tabSpecialties" onclick="switchTab('specialties')"
-                            class="tab-btn px-6 py-4 text-sm font-semibold text-gray-600 hover:bg-gray-50 border-b-2 border-transparent transition-all whitespace-nowrap">
-                            Especialidades
-                        </button>
+                            class="tab-btn px-6 py-4 text-sm font-semibold text-gray-600 hover:bg-gray-50 border-b-2 border-transparent transition-all whitespace-nowrap">Especialidades</button>
                     </div>
                 </div>
 
-                <!-- Tab Contents -->
-                <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 min-h-[400px]">
+                <!-- SECTIONS -->
 
-                    <!-- Users Tab -->
-                    <div id="usersTab" class="tab-content">
-                        <div class="flex justify-between items-center mb-8">
-                            <h2 class="font-serif text-2xl font-bold text-gray-900">Gestión de Usuarios</h2>
-                            <div class="flex gap-3">
-                                <select id="userRoleFilter" onchange="loadUsers()"
-                                    class="px-4 py-2 rounded-xl border border-gray-200 outline-none focus:border-blue-500 text-sm">
-                                    <option value="all">Todos los Roles</option>
-                                    <option value="user">Usuarios</option>
-                                    <option value="professional">Profesionales</option>
-                                    <option value="admin">Administradores</option>
-                                </select>
-                                <button onclick="loadUsers()"
-                                    class="p-2 text-gray-400 hover:text-blue-600 transition-colors rounded-full hover:bg-blue-50">
-                                    <i data-lucide="refresh-cw" class="h-4 w-4"></i>
-                                </button>
+                <!-- Users Section -->
+                <div id="usersSection"
+                    class="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 animate-fade-in hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="font-serif text-2xl font-bold text-gray-900">Gestión de Usuarios</h2>
+                        <select id="userRoleFilter" onchange="loadUsers()"
+                            class="px-4 py-2 border border-gray-200 rounded-xl text-sm focus:border-blue-500 outline-none">
+                            <option value="all">Todos los Roles</option>
+                            <option value="user">Usuarios</option>
+                            <option value="professional">Profesionales</option>
+                            <option value="salon">Salones</option>
+                            <option value="admin">Administradores</option>
+                        </select>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-gray-100">
+                                    <th class="pb-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Usuario
+                                    </th>
+                                    <th class="pb-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Rol</th>
+                                    <th class="pb-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Estado
+                                    </th>
+                                    <th class="pb-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Quota</th>
+                                    <th
+                                        class="pb-4 text-xs font-bold text-gray-400 uppercase tracking-wider text-right">
+                                        Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersTableBody">
+                                <!-- JS Injected -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Salons Section -->
+                <div id="salonsTab" class="hidden animate-fade-in">
+                    <div class="flex justify-between items-center mb-8">
+                        <h2 class="font-serif text-2xl font-bold text-gray-900">Salones Registrados</h2>
+                        <button onclick="openSalonModal()"
+                            class="bg-blue-600 text-white px-6 py-2 rounded-xl text-sm font-semibold hover:bg-blue-700 transition shadow-lg shadow-blue-200">
+                            + Nuevo Salón
+                        </button>
+                    </div>
+                    <div class="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-gray-100">
+                                    <th class="pb-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Salón</th>
+                                    <th class="pb-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Cliente
+                                    </th>
+                                    <th class="pb-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Ciudad
+                                    </th>
+                                    <th class="pb-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Tokens
+                                    </th>
+                                    <th
+                                        class="pb-4 text-xs font-bold text-gray-400 uppercase tracking-wider text-right">
+                                        Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="salonsTableBody">
+                                <!-- JS Injected -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Other Sections Placeholders -->
+                <div id="shopsTab" class="hidden p-12 text-center text-gray-400">Próximamente: Gestión de Tiendas</div>
+                <div id="commentsSection" class="hidden p-6">
+                    <div id="commentsContainer" class="space-y-4"></div>
+                </div>
+                <div id="creditsSection"
+                    class="hidden bg-white rounded-3xl p-8 max-w-2xl mx-auto shadow-sm border border-gray-100">
+                    <h2 class="font-serif text-2xl font-bold text-gray-900 mb-6">Agregar Créditos Manualmente</h2>
+                    <form id="creditsForm" class="space-y-6">
+                        <!-- Professional Search -->
+                        <div class="relative">
+                            <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Buscar
+                                Profesional</label>
+                            <input type="text" id="searchProfessional" placeholder="Nombre o Email..."
+                                class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 outline-none">
+                            <div id="searchResults"
+                                class="absolute w-full bg-white mt-1 rounded-xl shadow-xl border border-gray-100 max-h-48 overflow-y-auto hidden z-20">
                             </div>
+                            <input type="hidden" id="professionalId" required>
+                            <p id="selectedProfessionalName" class="mt-2 text-sm font-bold text-blue-600"></p>
                         </div>
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left border-collapse">
-                                <thead>
-                                    <tr class="border-b border-gray-100">
-                                        <th class="pb-4 text-xs font-bold text-gray-400 uppercase tracking-wider">
-                                            Usuario</th>
-                                        <th class="pb-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Rol
-                                        </th>
-                                        <th class="pb-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Estado
-                                        </th>
-                                        <th class="pb-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Quota
-                                        </th>
-                                        <th
-                                            class="pb-4 text-xs font-bold text-gray-400 uppercase tracking-wider text-right">
-                                            Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="usersTableBody" class="text-sm text-gray-600">
-                                    <!-- Rows injected via JS -->
-                                </tbody>
-                            </table>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Cantidad
+                                de Créditos</label>
+                            <input type="number" id="creditAmount" required min="1"
+                                class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 outline-none">
                         </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Motivo /
+                                Referencia</label>
+                            <input type="text" id="creditReason" required
+                                placeholder="Ej. Bonificación, Pago Efectivo..."
+                                class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 outline-none">
+                        </div>
+                        <button type="submit"
+                            class="w-full bg-emerald-500 text-white font-bold py-4 rounded-xl hover:bg-emerald-600 transition shadow-lg shadow-emerald-200">
+                            Agregar Créditos
+                        </button>
+                    </form>
+                </div>
+                <div id="validationsSection" class="hidden space-y-4">
+                    <div id="transactionsContainer" class="space-y-4"></div>
+                </div>
+                <div id="specialtiesSection"
+                    class="hidden bg-white rounded-3xl p-8 max-w-xl mx-auto shadow-sm border border-gray-100">
+                    <h2 class="font-serif text-2xl font-bold text-gray-900 mb-6">Especialidades</h2>
+                    <div class="flex gap-2 mb-6">
+                        <input type="text" id="newSpecialtyInput" placeholder="Nueva Especialidad"
+                            class="flex-1 px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 outline-none">
+                        <button onclick="addSpecialtyWrapper()"
+                            class="bg-blue-600 text-white px-6 rounded-xl font-bold hover:bg-blue-700 transition">Agregar</button>
                     </div>
+                    <div id="specialtiesList" class="space-y-2"></div>
+                </div>
 
-                    <!-- Salons Tab (New) -->
-                    <div id="salonsTab" class="tab-content hidden">
-                        <div class="flex justify-between items-center mb-8">
-                            <h2 class="font-serif text-2xl font-bold text-gray-900">Salones Registrados</h2>
-                            <button onclick="openSalonModal()"
-                                class="bg-blue-600 text-white px-6 py-2 rounded-xl text-sm font-semibold hover:bg-blue-700 transition shadow-lg shadow-blue-200">
-                                + Nuevo Salón
-                            </button>
-                        </div>
+            </div>
+        </main>
+    </div>
 
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left border-collapse">
-                                <thead>
-                                    <tr class="border-b border-gray-100">
-                                        <th class="pb-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Salón
-                                        </th>
-                                        <th class="pb-4 text-xs font-bold text-gray-400 uppercase tracking-wider">
-                                            Cliente</th>
-                                        <th class="pb-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Estado
-                                        </th>
-                                        <th class="pb-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Fechas
-                                        </th>
-                                        <th class="pb-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Tokens
-                                        </th>
-                                        <th
-                                            class="pb-4 text-xs font-bold text-gray-400 uppercase tracking-wider text-right">
-                                            Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="salonsTableBody" class="text-sm text-gray-600">
-                                    <!-- Injected -->
-                                </tbody>
-                            </table>
-                        </div>
+    <!-- Modals -->
+    <!-- Salon Modal -->
+    <div id="salonModal"
+        class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center backdrop-blur-sm">
+        <div
+            class="bg-white rounded-3xl p-8 max-w-lg w-full mx-4 shadow-2xl animate-fade-in relative max-h-[90vh] overflow-y-auto custom-scrollbar">
+            <button onclick="closeSalonModal()" class="absolute top-6 right-6 text-gray-400 hover:text-gray-600">
+                <i data-lucide="x" class="h-6 w-6"></i>
+            </button>
+            <h3 class="font-serif text-2xl font-bold text-gray-900 mb-6">Nuevo Salón</h3>
+            <form id="salonForm" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Email o
+                        Teléfono</label>
+                    <div class="flex gap-2">
+                        <select id="salonPhoneCode"
+                            class="w-1/3 px-3 py-3 rounded-xl border border-gray-200 bg-gray-50 text-sm">
+                            <option value="+52">🇲🇽 (+52)</option>
+                        </select>
+                        <input type="text" id="salonClientIdentifier" required placeholder="email@ejemplo.com"
+                            class="w-2/3 px-4 py-3 rounded-xl border border-gray-200 outline-none">
                     </div>
-
-                    <!-- Add Salon Modal -->
-                    <div id="salonModal"
-                        class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center backdrop-blur-sm">
-                        <div class="bg-white rounded-3xl p-8 max-w-lg w-full mx-4 shadow-2xl animate-fade-in relative">
-                            <button onclick="closeSalonModal()"
-                                class="absolute top-6 right-6 text-gray-400 hover:text-gray-600">
-                                <i data-lucide="x" class="h-6 w-6"></i>
-                            </button>
-                            <h3 class="font-serif text-2xl font-bold text-gray-900 mb-6">Nuevo Salón</h3>
-                            <form id="salonForm" class="space-y-4">
-                                <div>
-                                    <label
-                                        class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Email
-                                        o Teléfono del Cliente</label>
-                                    <div class="flex gap-2">
-                                        <select id="salonPhoneCode"
-                                            class="w-1/3 px-3 py-3 rounded-xl border border-gray-200 focus:border-blue-500 outline-none bg-gray-50 text-sm">
-                                            <!-- Injected by JS -->
-                                            <option value="+52">🇲🇽 (+52)</option>
-                                        </select>
-                                        <input type="text" id="salonClientIdentifier" required
-                                            placeholder="email@ejemplo.com ó 5512345678"
-                                            class="w-2/3 px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 outline-none">
-                                    </div>
-                                    <p class="text-xs text-gray-400 mt-1">Si es teléfono, selecciona la lada correcta.
-                                    </p>
-                                </div>
-                                <div>
-                                    <label
-                                        class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Nombre
-                                        del Cliente (Responsable)</label>
-                                    <input type="text" id="salonClientName" required placeholder="Nombre Completo"
-                                        class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 outline-none">
-                                </div>
-                                <div>
-                                    <label
-                                        class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Nombre
-                                        del Salón</label>
-                                    <input type="text" id="salonName" required placeholder="Ej. Studio Elegance"
-                                        class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 outline-none">
-                                </div>
-                                <div>
-                                    <div>
-                                        <label
-                                            class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Dirección
-                                            (Calle y Número)</label>
-                                        <textarea id="salonAddress" required rows="2"
-                                            placeholder="Calle, Número, Colonia..."
-                                            class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 outline-none"></textarea>
-                                    </div>
-                                    <div class="grid grid-cols-3 gap-3">
-                                        <div>
-                                            <label
-                                                class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">País</label>
-                                            <select id="salonCountry" required data-target-state="salonState"
-                                                class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 outline-none">
-                                                <option value="">Cargando...</option>
-                                            </select>
-                                        </div>
-                                        <div>
-                                            <label
-                                                class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Estado</label>
-                                            <select id="salonState" required disabled data-target-city="salonCity"
-                                                class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 outline-none bg-gray-50">
-                                                <option value="">Selecciona País</option>
-                                            </select>
-                                        </div>
-                                        <div>
-                                            <label
-                                                class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Ciudad</label>
-                                            <select id="salonCity" required disabled
-                                                class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 outline-none bg-gray-50">
-                                                <option value="">Selecciona Estado</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="mb-4">
-                                    <label
-                                        class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Contraseña
-                                        (Opcional)</label>
-                                    <input type="text" id="salonPassword"
-                                        placeholder="Dejar vacío para usar default (102o3o4o)"
-                                        class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 outline-none">
-                                    <p class="text-xs text-gray-400 mt-1">Si dejas esto vacío, la contraseña será:
-                                        <code class="bg-gray-100 px-1 rounded text-red-500 font-mono">102o3o4o</code>
-                                    </p>
-                                </div>
-                                <div class="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label
-                                            class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Inicio
-                                            Operaciones</label>
-                                        <input type="date" id="salonStartDate" required
-                                            class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 outline-none">
-                                    </div>
-                                    <div>
-                                        <label
-                                            class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Fecha
-                                            de Cobro</label>
-                                        <input type="date" id="salonPaymentDate" required
-                                            class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 outline-none">
-                                    </div>
-                                </div>
-                                <div>
-                                    <label
-                                        class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Tokens
-                                        Inciales (Consumidos)</label>
-                                    <input type="number" id="salonTokens" value="0" min="0"
-                                        class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 outline-none">
-                                </div>
-                                <button type="submit"
-                                    class="w-full py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition font-bold shadow-lg shadow-blue-200 mt-4">
-                                    Crear Salón
-                                </button>
-                            </form>
-                        </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Nombre
+                        Cliente</label>
+                    <input type="text" id="salonClientName" required
+                        class="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Nombre
+                        Salón</label>
+                    <input type="text" id="salonName" required
+                        class="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Dirección</label>
+                    <textarea id="salonAddress" required rows="2"
+                        class="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none"></textarea>
+                </div>
+                <!-- Location Selects -->
+                <div class="grid grid-cols-3 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">País</label>
+                        <select id="salonCountry" required
+                            class="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none">
+                            <option value="">Cargando...</option>
+                        </select>
                     </div>
-
-                    <!-- Shops Tab (New) -->
-                    <div id="shopsTab" class="tab-content hidden">
-
+                    <div>
+                        <label
+                            class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Estado</label>
+                        <select id="salonState" required
+                            class="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none">
+                            <option value="">...</option>
+                        </select>
                     </div>
-
-                    <!-- ... (Existing code) ... -->
-                    <script src="/static/js/auth.js"></script>
-                    <script src="/static/js/api.js"></script>
-                    <script src="/static/js/components.js"></script>
-                    <script>
-                        // ... (Existing code) ...
-                        document.getElementById('salonForm').addEventListener('submit', async (e) => {
-                            e.preventDefault();
-
-                            // ... (Existing identifier logic) ...
-                            // Handle Client Identifier (Email or Phone)
-                            let identifier = document.getElementById('salonClientIdentifier').value.trim();
-                            const phoneCode = document.getElementById('salonPhoneCode').value;
-
-                            // Simple heuristic: if it looks like a phone number (digits only or mostly digits), prepend code
-                            if (!identifier.includes('@') && /^\d+$/.test(identifier.replace(/\s/g, ''))) {
-                                identifier = phoneCode + identifier.replace(/\D/g, ''); // e.g. +525512345678
-                            }
-
-                            const data = {
-                                client_identifier: identifier,
-                                client_name: document.getElementById('salonClientName').value,
-                                salon_name: document.getElementById('salonName').value,
-                                address: document.getElementById('salonAddress').value,
-                                city: document.getElementById('salonCity').value,
-                                state: document.getElementById('salonState').value,
-                                country: document.getElementById('salonCountry').value,
-                                start_date: document.getElementById('salonStartDate').value,
-                                payment_date: document.getElementById('salonPaymentDate').value,
-                                tokens_consumed: document.getElementById('salonTokens').value,
-                                password: document.getElementById('salonPassword').value // NEW FIELD
-                            };
-
-                            // ... (Existing submission) ...
-
-                            async function deleteSalon(id) {
-                                if (confirm('¿Seguro que desea eliminar este salón?')) {
-                                    const res = await apiDelete(`/admin/salones/${id}`);
-                                    if (res.success) loadSalons();
-                                    else alert(res.error);
-                                }
-                            }
-
-
-                            // --- Data Loading Functions ---
-
-                            async function loadDashboard() {
-                                const result = await getAdminDashboard();
-                                if (result.success) {
-                                    document.getElementById('statUsers').textContent = result.data.users?.total || 0;
-                                    // Assuming API returns 'professionals' count separate or filtered
-                                    document.getElementById('statProfessionals').textContent = result.data.users?.professionals_count || result.data.professionals?.total || 0;
-
-                                    const pending = (result.data.pending?.comments || 0) + (result.data.pending?.payments || 0) + (result.data.pending?.withdrawals || 0);
-                                    document.getElementById('statPending').textContent = pending;
-                                    document.getElementById('statRevenue').textContent = formatCurrency(result.data.revenue?.total_mxn || 0);
-                                }
-                            }
-
-                            async function loadUsers() {
-                                const role = document.getElementById('userRoleFilter').value;
-                                const tbody = document.getElementById('usersTableBody');
-                                tbody.innerHTML = '<tr><td colspan="5" class="py-8 text-center text-gray-400">Cargando...</td></tr>';
-
-                                try {
-                                    // Determine API endpoint filter based on local logic or backend support
-                                    // For now assuming the backend filter logic supports 'role' param or we filter client side if needed
-                                    const result = await apiGet(`/admin/usuarios?role=${role === 'all' ? '' : role}`);
-
-                                    if (result.success && result.data.users) {
-                                        if (result.data.users.length === 0) {
-                                            tbody.innerHTML = '<tr><td colspan="5" class="py-8 text-center text-gray-400">No se encontraron usuarios.</td></tr>';
-                                            return;
-                                        }
-
-                                        tbody.innerHTML = result.data.users.map(u => {
-                                            const statusColor = u.subscription_status === 'active' ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-500';
-                                            return `
-                        <tr class="border-b border-gray-50 hover:bg-gray-50 transition-colors">
-                            <td class="py-4 font-medium">
-                                <div class="flex flex-col">
-                                    <span class="text-gray-900">${u.full_name}</span>
-                                    <span class="text-xs text-gray-500">${u.email}</span>
-                                </div>
-                            </td>
-                            <td class="py-4">
-                                <span class="px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-xs font-bold capitalize">${u.role}</span>
-                            </td>
-                            <td class="py-4">
-                                <span class="px-3 py-1 rounded-full text-xs font-bold capitalize ${statusColor}">
-                                    ${u.subscription_status || 'Inactivo'}
-                                </span>
-                            </td>
-                            <td class="py-4 text-xs font-mono">
-                                <span class="text-gray-900 font-bold">${u.current_month_tokens || 0}</span>
-                                <span class="text-gray-400"> / ${u.monthly_token_limit}</span>
-                            </td>
-                            <td class="py-4 text-right">
-                                <button onclick="toggleUserStatus(${u.id}, '${u.subscription_status === 'active' ? 'inactive' : 'active'}')" 
-                                    class="text-xs font-bold text-blue-600 hover:text-blue-800 transition">
-                                    ${u.subscription_status === 'active' ? 'Bloquear' : 'Activar'}
-                                </button>
-                            </td>
-                        </tr>
-                        `;
-                                        }).join('');
-                                    }
-                                } catch (e) {
-                                    console.error(e);
-                                    tbody.innerHTML = '<tr><td colspan="5" class="py-8 text-center text-rose-500">Error al cargar usuarios.</td></tr>';
-                                }
-                            }
-
-                            async function loadPendingComments() {
-                                const container = document.getElementById('commentsContainer');
-                                const result = await getPendingComments();
-
-                                if (result.success && result.data.comments && result.data.comments.length > 0) {
-                                    container.innerHTML = result.data.comments.map(c => `
-                    <div class="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
-                        <div class="flex justify-between items-start mb-4">
-                            <div>
-                                <h4 class="font-bold text-gray-900">${c.author_name}</h4>
-                                <p class="text-xs text-gray-500">Para: <span class="text-blue-600 font-medium">${c.professional_name}</span></p>
-                            </div>
-                            <span class="text-xs text-gray-400">${formatDate(c.created_at)}</span>
-                        </div>
-                        <p class="text-gray-600 text-sm mb-4 bg-gray-50 p-4 rounded-xl">"${c.content}"</p>
-                        <div class="flex gap-2 justify-end">
-                            <button onclick="approveComment(${c.id})" class="px-4 py-2 bg-emerald-50 text-emerald-600 rounded-xl text-xs font-bold hover:bg-emerald-100 transition">Aprobar</button>
-                            <button onclick="rejectComment(${c.id})" class="px-4 py-2 bg-rose-50 text-rose-600 rounded-xl text-xs font-bold hover:bg-rose-100 transition">Rechazar</button>
-                        </div>
+                    <div>
+                        <label
+                            class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Ciudad</label>
+                        <select id="salonCity" required
+                            class="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none">
+                            <option value="">...</option>
+                        </select>
                     </div>
-                `).join('');
-                                } else {
-                                    container.innerHTML = `<p class="text-center text-gray-400 py-12">No hay comentarios pendientes.</p>`;
-                                }
-                            }
+                </div>
+                <!-- Password Field -->
+                <div class="mb-4 bg-yellow-50 p-4 rounded-xl border border-yellow-100">
+                    <label class="block text-xs font-bold text-yellow-700 uppercase tracking-wider mb-2">Contraseña
+                        (Opcional)</label>
+                    <input type="text" id="salonPassword" placeholder="Dejar vacío para usar default"
+                        class="w-full px-4 py-3 rounded-xl border border-yellow-200 focus:border-yellow-500 outline-none bg-white">
+                    <p class="text-xs text-yellow-600 mt-1">Si dejas vacío: <code class="font-bold">102o3o4o</code></p>
+                </div>
 
-                            // Reuse approve/reject functions from API logic (Assuming defined in current scope or inline)
-                            async function approveComment(id) {
-                                const res = await updateCommentStatus(id, 'approved');
-                                if (res.success) { loadPendingComments(); loadDashboard(); }
-                            }
-                            async function rejectComment(id) {
-                                const res = await updateCommentStatus(id, 'rejected');
-                                if (res.success) { loadPendingComments(); loadDashboard(); }
-                            }
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label
+                            class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Inicio</label><input
+                            type="date" id="salonStartDate" required
+                            class="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none"></div>
+                    <div><label
+                            class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Cobro</label><input
+                            type="date" id="salonPaymentDate" required
+                            class="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none"></div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Tokens</label>
+                    <input type="number" id="salonTokens" value="0"
+                        class="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none">
+                </div>
+                <button type="submit"
+                    class="w-full bg-blue-600 text-white font-bold py-4 rounded-xl hover:bg-blue-700 transition">Crear
+                    Salón</button>
+            </form>
+        </div>
+    </div>
 
-                            async function loadPendingTransactions() {
-                                const container = document.getElementById('transactionsContainer');
-                                const result = await apiGet('/admin/transacciones'); // Helper from earlier steps potentially
 
-                                // Fallback rendering
-                                if (result.success && result.data.transactions && result.data.transactions.length > 0) {
-                                    container.innerHTML = result.data.transactions.map(tx => `
-                    <div class="flex items-center justify-between bg-white border border-gray-100 rounded-2xl p-4 shadow-sm">
-                        <div class="flex items-center gap-4">
-                            <div class="h-10 w-10 bg-amber-50 text-amber-500 rounded-full flex items-center justify-center">
-                                <i data-lucide="clock" class="h-5 w-5"></i>
-                            </div>
-                            <div>
-                                <p class="font-bold text-gray-900 text-sm">${tx.professional_name}</p>
-                                <div class="text-xs text-gray-500 flex flex-col gap-0.5">
-                                    <span>${tx.email} &bull; ${tx.phone || 'Sin télefono'}</span>
-                                    <span class="font-medium text-blue-600">ID Usuario: ${tx.professional_id}</span>
-                                    <span>Compra: ${tx.amount} créditos ($${tx.price_mxn})</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="flex gap-2">
-                             <button onclick="approveTransaction(${tx.id})" title="Aprobar" class="p-2 text-emerald-500 hover:bg-emerald-50 rounded-lg transition"><i data-lucide="check" class="h-5 w-5"></i></button>
-                             <button onclick="rejectTransaction(${tx.id})" title="Rechazar" class="p-2 text-rose-500 hover:bg-rose-50 rounded-lg transition"><i data-lucide="x" class="h-5 w-5"></i></button>
-                        </div>
-                    </div>
-                `).join('');
-                                    lucide.createIcons();
-                                } else {
-                                    container.innerHTML = `<p class="text-center text-gray-400 py-12">No hay recargas pendientes.</p>`;
-                                }
-                            }
+    <script src="/static/js/auth.js"></script>
+    <script src="/static/js/api.js"></script>
+    <script src="/static/js/components.js"></script>
+    <script>
+        // Init
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = await checkAuth('admin');
+            if (document.getElementById('adminNameDisplay')) document.getElementById('adminNameDisplay').textContent = user.full_name;
 
-                            // Mock approve/reject tx if not globally defined
-                            async function approveTransaction(id) {
-                                await apiPost(`/admin/transacciones/${id}/aprobar`);
-                                loadPendingTransactions();
-                            }
-                            async function rejectTransaction(id) {
-                                await apiPost(`/admin/transacciones/${id}/rechazar`);
-                                loadPendingTransactions();
-                            }
+            lucide.createIcons();
 
-                            async function loadSpecialties() {
-                                const container = document.getElementById('specialtiesList');
-                                const res = await apiGet('/admin/especialidades');
+            // Initial Loads
+            loadDashboard();
+            loadUsers(); // Load visible tab data
 
-                                if (res.success && res.data.specialties) {
-                                    container.innerHTML = res.data.specialties.map(s => `
-                    <div class="flex justify-between items-center bg-gray-50 p-3 rounded-xl border border-gray-100">
-                        <span class="text-sm font-bold text-gray-700">${s.name}</span>
-                        <button onclick="deleteSpecialty(${s.id})" class="text-rose-400 hover:text-rose-600 transition"><i data-lucide="trash-2" class="h-4 w-4"></i></button>
-                    </div>
+            populateCountries('salonCountry');
+
+            // Default Tab
+            switchTab('users');
+
+            // Search Listener
+            const searchInput = document.getElementById('searchProfessional');
+            if (searchInput) {
+                searchInput.addEventListener('input', handleSearch);
+            }
+        });
+
+        // Tab Switching Logic
+        function switchTab(tabName) {
+            // Update Buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.className = 'tab-btn px-6 py-4 text-sm font-semibold text-gray-600 hover:bg-gray-50 border-b-2 border-transparent transition-all whitespace-nowrap';
+            });
+            const active = document.getElementById('tab' + tabName.charAt(0).toUpperCase() + tabName.slice(1));
+            if (active) active.className = 'tab-btn px-6 py-4 text-sm font-bold text-blue-600 border-b-2 border-blue-600 bg-blue-50/50 transition-all whitespace-nowrap';
+
+            // Hide Sections
+            const maps = {
+                'users': 'usersSection',
+                'salons': 'salonsTab',
+                'shops': 'shopsTab',
+                'comments': 'commentsSection',
+                'credits': 'creditsSection',
+                'validations': 'validationsSection',
+                'specialties': 'specialtiesSection'
+            };
+
+            Object.values(maps).forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.add('hidden');
+            });
+
+            // Show Target
+            const target = document.getElementById(maps[tabName]);
+            if (target) target.classList.remove('hidden');
+
+            // Load Data
+            if (tabName === 'salons') loadSalons();
+            if (tabName === 'comments') loadPendingComments();
+            if (tabName === 'validations') loadPendingTransactions();
+            if (tabName === 'specialties') loadSpecialties();
+        }
+
+        // --- Data Loading Functions ---
+
+        async function loadDashboard() {
+            const res = await apiGet('/admin/dashboard');
+            if (res.success) {
+                document.getElementById('statUsers').textContent = res.data.total_users || 0;
+                document.getElementById('statProfessionals').textContent = res.data.total_professionals || 0;
+                // document.getElementById('statRevenue').textContent = formatCurrency(res.data.income || 0);
+            }
+        }
+
+        async function loadUsers() {
+            const role = document.getElementById('userRoleFilter').value;
+            const res = await apiGet(`/admin/usuarios?role=${role === 'all' ? '' : role}`);
+            const tbody = document.getElementById('usersTableBody');
+
+            if (res.success && res.data.users) {
+                tbody.innerHTML = res.data.users.map(u => `
+                    <tr class="border-b border-gray-50 hover:bg-gray-50">
+                        <td class="py-4">
+                            <div class="flex flex-col"><span class="font-medium text-gray-900">${u.full_name}</span><span class="text-xs text-gray-500">${u.email}</span></div>
+                        </td>
+                        <td class="py-4"><span class="px-2 py-1 bg-blue-50 text-blue-600 rounded text-xs font-bold capitalize">${u.role}</span></td>
+                        <td class="py-4"><span class="px-2 py-1 bg-gray-100 rounded text-xs font-bold">${u.subscription_status || 'inactivo'}</span></td>
+                         <td class="py-4 text-xs">${u.current_month_tokens} / ${u.monthly_token_limit}</td>
+                        <td class="py-4 text-right">--</td>
+                    </tr>
                  `).join('');
-                                    lucide.createIcons();
-                                }
-                            }
+            } else {
+                tbody.innerHTML = '<tr><td colspan="5" class="py-8 text-center text-gray-400">No hay usuarios</td></tr>';
+            }
+        }
 
-                            async function addSpecialtyWrapper() {
-                                const input = document.getElementById('newSpecialtyInput');
-                                if (input.value.trim()) {
-                                    await apiPost('/admin/especialidades', { name: input.value.trim() });
-                                    input.value = '';
-                                    loadSpecialties();
-                                }
-                            }
+        async function loadSalons() {
+            const res = await apiGet('/admin/salones');
+            const tbody = document.getElementById('salonsTableBody');
+            if (res.success && res.data.salons) {
+                tbody.innerHTML = res.data.salons.map(s => `
+                    <tr class="border-b border-gray-50 hover:bg-gray-50">
+                        <td class="py-4 font-bold text-gray-900">${s.salon_name}</td>
+                        <td class="py-4 text-sm text-gray-600">${s.client_name}<br><span class="text-xs text-gray-400">${s.email}</span></td>
+                        <td class="py-4 text-sm text-gray-600">${s.city}</td>
+                        <td class="py-4 text-sm font-mono">${s.tokens_consumed}</td>
+                        <td class="py-4 text-right">
+                             <button onclick="deleteSalon(${s.id})" class="text-rose-500 hover:bg-rose-50 p-2 rounded"><i data-lucide="trash-2" class="h-4 w-4"></i></button>
+                        </td>
+                    </tr>
+                 `).join('');
+                lucide.createIcons();
+            }
+        }
 
-                            async function deleteSpecialty(id) {
-                                if (confirm('Eliminar especialidad?')) {
-                                    await apiDelete(`/admin/especialidades/${id}`);
-                                    loadSpecialties();
-                                }
-                            }
+        // --- Form Handlers ---
 
-                            // Search Professional Logic (Simplified)
-                            const searchInput = document.getElementById('searchProfessional');
-                            const searchResults = document.getElementById('searchResults');
-                            let searchTimeout;
+        function openSalonModal() { document.getElementById('salonModal').classList.remove('hidden'); }
+        function closeSalonModal() { document.getElementById('salonModal').classList.add('hidden'); }
 
-                            if (searchInput) {
-                                searchInput.addEventListener('input', (e) => {
-                                    clearTimeout(searchTimeout);
-                                    const query = e.target.value;
-                                    if (query.length < 2) { searchResults.classList.add('hidden'); return; }
+        document.getElementById('salonForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            // Data Gathering
+            let identifier = document.getElementById('salonClientIdentifier').value.trim();
+            // If phone logic here...
 
-                                    searchTimeout = setTimeout(async () => {
-                                        const res = await apiGet(`/admin/profesionales/buscar?q=${encodeURIComponent(query)}`);
-                                        if (res.success && res.data.professionals.length > 0) {
-                                            searchResults.innerHTML = res.data.professionals.map(p => `
-                            <div onclick="selectProfessional(${p.id}, '${p.full_name}')" class="p-3 hover:bg-blue-50 cursor-pointer border-b border-gray-50 last:border-0 transition-colors">
-                                <p class="font-bold text-sm text-gray-900">${p.full_name}</p>
-                                <p class="text-xs text-gray-500">${p.email}</p>
-                            </div>
-                         `).join('');
-                                            searchResults.classList.remove('hidden');
-                                        } else {
-                                            searchResults.innerHTML = '<div class="p-3 text-xs text-gray-400">No encontrado</div>';
-                                            searchResults.classList.remove('hidden');
-                                        }
-                                    }, 300);
-                                });
-                            }
+            const data = {
+                client_identifier: identifier,
+                client_name: document.getElementById('salonClientName').value,
+                salon_name: document.getElementById('salonName').value,
+                address: document.getElementById('salonAddress').value,
+                city: document.getElementById('salonCity').value,
+                state: document.getElementById('salonState').value,
+                country: document.getElementById('salonCountry').value,
+                start_date: document.getElementById('salonStartDate').value,
+                payment_date: document.getElementById('salonPaymentDate').value,
+                tokens_consumed: document.getElementById('salonTokens').value,
+                password: document.getElementById('salonPassword').value // NEW
+            };
 
-                            function selectProfessional(id, name) {
-                                document.getElementById('professionalId').value = id;
-                                document.getElementById('selectedProfessionalName').textContent = name;
-                                searchResults.classList.add('hidden');
-                                searchInput.value = '';
-                                // ... (Existing submission) ...
-                                const res = await apiPost('/admin/salones', data);
-                                if (res.success) {
-                                    alert('Salón creado exitosamente');
-                                    closeSalonModal();
-                                    e.target.reset();
-                                    // Reset dropdowns
-                                    populateCountries('salonCountry');
-                                    loadSalons();
-                                } else {
-                                    alert('Error: ' + res.error);
-                                }
-                            });
+            const res = await apiPost('/admin/salones', data);
+            if (res.success) {
+                alert('Salón Creado');
+                closeSalonModal();
+                e.target.reset();
+                loadSalons();
+            } else {
+                alert('Error: ' + res.error);
+            }
+        });
 
-                        async function deleteSalon(id) {
-                            if (confirm('¿Seguro que desea eliminar este salón?')) {
-                                const res = await apiDelete(`/admin/salones/${id}`);
-                                if (res.success) loadSalons();
-                                else alert(res.error);
-                            }
-                        }
+        async function deleteSalon(id) {
+            if (confirm('¿Eliminar salón? Esta acción es irreversible.')) {
+                const res = await apiDelete(`/admin/salones/${id}`);
+                if (res.success) loadSalons();
+                else alert(res.error);
+            }
+        }
 
-                        document.getElementById('creditsForm')?.addEventListener('submit', async (e) => {
-                            e.preventDefault();
-                            const id = document.getElementById('professionalId').value;
-                            const amount = document.getElementById('creditAmount').value;
-                            const reason = document.getElementById('creditReason').value;
+        async function loadPendingComments() {
+            const container = document.getElementById('commentsContainer');
+            const res = await apiGet('/admin/comentarios/pendientes'); // Mock endpoint path
+            if (res.success && res.data.comments?.length > 0) {
+                container.innerHTML = res.data.comments.map(c => `<div class="p-4 border">Comentario: ${c.content}</div>`).join('');
+            } else { container.innerHTML = '<p class="text-gray-400 text-center">No hay comentarios</p>'; }
+        }
 
-                            const res = await apiPost(`/admin/creditos/${id}`, { amount, reason });
-                            if (res.success) {
-                                alert('Créditos agregados');
-                                e.target.reset();
-                                document.getElementById('selectedProfessionalName').textContent = '';
-                            } else {
-                                alert('Error: ' + res.error);
-                            }
-                        });
+        async function loadPendingTransactions() {
+            const container = document.getElementById('transactionsContainer');
+            container.innerHTML = '<p class="text-gray-400 text-center">No hay transacciones pendientes</p>';
+        }
 
-                    </script>
+        async function loadSpecialties() {
+            const container = document.getElementById('specialtiesList');
+            const res = await apiGet('/admin/especialidades');
+            if (res.success && res.data.specialties) {
+                container.innerHTML = res.data.specialties.map(s => `
+                    <div class="flex justify-between p-2 bg-gray-50 rounded border">
+                        <span>${s.name}</span>
+                        <button onclick="apiDelete('/admin/especialidades/${s.id}').then(loadSpecialties)" class="text-red-500">X</button>
+                    </div>`).join('');
+            }
+        }
+
+        // Search Logic
+        let searchTimeout;
+        function handleSearch(e) {
+            clearTimeout(searchTimeout);
+            const query = e.target.value;
+            const results = document.getElementById('searchResults');
+            if (query.length < 2) { results.classList.add('hidden'); return; }
+
+            searchTimeout = setTimeout(async () => {
+                const res = await apiGet(`/admin/profesionales/buscar?q=${encodeURIComponent(query)}`);
+                if (res.success && res.data.professionals.length > 0) {
+                    results.innerHTML = res.data.professionals.map(p => `
+                        <div onclick="selectProfessional(${p.id}, '${p.full_name}')" class="p-3 hover:bg-blue-50 cursor-pointer border-b">
+                            <p class="font-bold">${p.full_name}</p>
+                            <p class="text-xs text-gray-500">${p.email}</p>
+                        </div>
+                     `).join('');
+                    results.classList.remove('hidden');
+                } else {
+                    results.innerHTML = '<div class="p-3 text-gray-400">No encontrado</div>';
+                    results.classList.remove('hidden');
+                }
+            }, 300);
+        }
+
+        function selectProfessional(id, name) {
+            document.getElementById('professionalId').value = id;
+            document.getElementById('selectedProfessionalName').textContent = name;
+            document.getElementById('searchResults').classList.add('hidden');
+            document.getElementById('searchProfessional').value = '';
+        }
+
+        document.getElementById('creditsForm')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('professionalId').value;
+            const res = await apiPost(`/admin/creditos/${id}`, {
+                amount: document.getElementById('creditAmount').value,
+                reason: document.getElementById('creditReason').value
+            });
+            if (res.success) { alert('Créditos Agregados'); e.target.reset(); document.getElementById('selectedProfessionalName').textContent = ''; }
+            else { alert('Error: ' + res.error); }
+        });
+
+    </script>
 </body>
 
 </html>
