@@ -22,17 +22,26 @@ if (!fs.existsSync(dbDir)) {
     fs.mkdirSync(dbDir, { recursive: true });
 }
 
-export const sequelize = new Sequelize({
-    dialect: 'sqlite',
-    storage: dbPath,
-    logging: false, // Reduce noise unless debugging
-    pool: {
-        max: 5,
-        min: 0,
-        acquire: 30000,
-        idle: 10000
+export const sequelize = new Sequelize(
+    process.env.DB_NAME || 'database',
+    process.env.DB_USER || 'user',
+    process.env.DB_PASS || 'password',
+    {
+        host: process.env.DB_HOST || 'localhost',
+        dialect: process.env.DB_DIALECT || 'sqlite', // 'mysql' or 'sqlite'
+        storage: dbPath, // Only used for SQLite
+        logging: false, // Reduce noise
+        dialectOptions: process.env.DB_DIALECT === 'mysql' ? {
+            // MySQL specific options if needed (e.g. ssl)
+        } : {},
+        pool: {
+            max: 5,
+            min: 0,
+            acquire: 30000,
+            idle: 10000
+        }
     }
-});
+);
 
 // Force journal mode to DELETE to avoid locking issues on shared hosting
 sequelize.afterConnect((connection) => {
@@ -55,5 +64,7 @@ sequelize.afterConnect((connection) => {
         } catch (e) {
             console.error("Failed to set journal_mode:", e);
         }
+    } else {
+        console.log("✅ Using MySQL/MariaDB - Skipping SQLite pragmas.");
     }
 });
