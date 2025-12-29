@@ -1,45 +1,126 @@
 const { Sequelize } = require('sequelize');
 require('dotenv').config();
 
+/**
+ * ==========================================
+ * DATABASE CONFIGURATION (MySQL + Sequelize)
+ * ==========================================
+ * 
+ * Production-ready configuration for Hostinger MySQL.
+ * All credentials should be defined in environment variables.
+ * 
+ * Required ENV Variables:
+ * - DB_HOST: Database host (e.g., 127.0.0.1)
+ * - DB_USER: Database username
+ * - DB_NAME: Database name
+ * - DB_PASS: Database password
+ * - DB_PORT: (Optional) Database port, defaults to 3306
+ */
+
 // ==========================================
-// 🛡️ SOLID MYSQL CONFIGURATION (CommonJS)
+// CONFIGURATION VALIDATION
 // ==========================================
 
-// HOSTINGER FIX: Detect 'srv1691.hstgr.io' and force '127.0.0.1' to avoid IPv6 (::1) issues
-let targetHost = process.env.DB_HOST || '127.0.0.1';
-if (targetHost === 'srv1691.hstgr.io' || targetHost === 'localhost') {
-    console.log("⚠️ Hostinger Detected: Forcing 127.0.0.1 to avoid IPv6 Access Denied");
-    targetHost = '127.0.0.1';
-}
+const config = {
+    host: process.env.DB_HOST || '127.0.0.1',
+    user: process.env.DB_USER || 'u182581262_terminal',
+    name: process.env.DB_NAME || 'u182581262_appnode',
+    pass: process.env.DB_PASS || '',
+    port: parseInt(process.env.DB_PORT, 10) || 3306
+};
 
-console.log("🔌 Initializing Database Connection (MySQL)...");
-console.log("   Target Host:", targetHost);
-console.log("   Target User:", process.env.DB_USER || 'u182581262_terminal');
-console.log("   Target DB:  ", process.env.DB_NAME || 'u182581262_appnode');
+// Log configuration (without password)
+console.log('🔌 MySQL Configuration:');
+console.log(`   Host: ${config.host}:${config.port}`);
+console.log(`   User: ${config.user}`);
+console.log(`   Database: ${config.name}`);
+
+// ==========================================
+// SEQUELIZE INSTANCE
+// ==========================================
 
 const sequelize = new Sequelize(
-    process.env.DB_NAME || 'u182581262_appnode',
-    process.env.DB_USER || 'u182581262_terminal',
-    process.env.DB_PASS || 'WeK6#VY54+JU4Kn',
+    config.name,
+    config.user,
+    config.pass,
     {
-        host: targetHost,
+        host: config.host,
+        port: config.port,
         dialect: 'mysql',
-        logging: false,
-        port: process.env.DB_PORT || 3306,
-        dialectOptions: {
-            ssl: {
-                require: false,
-                rejectUnauthorized: false
-            },
-            connectTimeout: 10000
-        },
+
+        // Logging: Disable in production, enable for debugging
+        logging: process.env.NODE_ENV === 'development' ? console.log : false,
+
+        // Connection Pool Configuration
         pool: {
-            max: 5,
-            min: 0,
-            acquire: 30000,
-            idle: 10000
+            max: 10,           // Maximum connections
+            min: 0,            // Minimum connections
+            acquire: 30000,    // Max time (ms) to acquire connection
+            idle: 10000        // Max idle time before release
+        },
+
+        // MySQL-specific options
+        dialectOptions: {
+            connectTimeout: 10000,  // 10 seconds timeout
+
+            // SSL Configuration (disabled for local/Hostinger shared)
+            ssl: false,
+
+            // Character set for proper UTF-8 support
+            charset: 'utf8mb4',
+
+            // Timezone handling
+            timezone: '+00:00'
+        },
+
+        // Query options
+        define: {
+            timestamps: true,           // Adds createdAt/updatedAt
+            underscored: false,         // Use camelCase (not snake_case)
+            freezeTableName: true,      // Don't pluralize table names
+            charset: 'utf8mb4',
+            collate: 'utf8mb4_unicode_ci'
+        },
+
+        // Retry configuration
+        retry: {
+            max: 3,                     // Max retry attempts
+            match: [                    // Retry on these errors
+                /ETIMEDOUT/,
+                /ECONNRESET/,
+                /ENOTFOUND/,
+                /ENETUNREACH/,
+                /EAI_AGAIN/
+            ]
         }
     }
 );
 
-module.exports = { sequelize };
+// ==========================================
+// CONNECTION TESTING (Optional)
+// ==========================================
+
+/**
+ * Test database connection
+ * @returns {Promise<boolean>} Connection status
+ */
+async function testConnection() {
+    try {
+        await sequelize.authenticate();
+        console.log('✅ Database connection established successfully.');
+        return true;
+    } catch (error) {
+        console.error('❌ Database connection failed:', error.message);
+        console.error('   Check your DB_HOST, DB_USER, DB_PASS, and DB_NAME environment variables.');
+        return false;
+    }
+}
+
+// ==========================================
+// EXPORTS
+// ==========================================
+
+module.exports = {
+    sequelize,
+    testConnection
+};
