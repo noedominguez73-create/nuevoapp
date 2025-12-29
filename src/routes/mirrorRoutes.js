@@ -182,6 +182,38 @@ router.post('/keys', async (req, res) => {
     }
 });
 
+// Update API key settings (e.g., model preference)
+router.put('/keys/:id/settings', async (req, res) => {
+    try {
+        const key = await ApiConfig.findByPk(req.params.id);
+        if (!key) return res.status(404).json({ error: 'API key not found' });
+
+        const { model } = req.body;
+        if (!model) return res.status(400).json({ error: 'Model name required' });
+
+        // Parse existing settings or create new object
+        let settings = {};
+        if (key.settings) {
+            try {
+                settings = typeof key.settings === 'string' ? JSON.parse(key.settings) : key.settings;
+            } catch (e) {
+                settings = {};
+            }
+        }
+
+        // Update model in settings
+        settings.model = model;
+
+        // Save back to database
+        await key.update({ settings: JSON.stringify(settings) });
+
+        res.json({ message: 'Settings updated', settings });
+    } catch (e) {
+        console.error('Error updating key settings:', e);
+        res.status(500).json({ error: e.message });
+    }
+});
+
 router.put('/keys/:id/active', async (req, res) => {
     try {
         const key = await ApiConfig.findByPk(req.params.id);

@@ -30,7 +30,7 @@ const ApiConfig = sequelize.define('ApiConfig', {
         type: DataTypes.BOOLEAN,
         defaultValue: true
     },
-    config_json: DataTypes.TEXT
+    settings: DataTypes.TEXT
 }, {
     tableName: 'api_configs',
     timestamps: true,
