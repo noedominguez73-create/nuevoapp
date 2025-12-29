@@ -1,7 +1,7 @@
-import { DataTypes } from 'sequelize';
-import { sequelize } from '../config/database.js';
+const { DataTypes } = require('sequelize');
+const { sequelize } = require('../config/database.js');
 
-export const SalonConfig = sequelize.define('SalonConfig', {
+const SalonConfig = sequelize.define('SalonConfig', {
     id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -32,20 +32,14 @@ export const SalonConfig = sequelize.define('SalonConfig', {
     },
     stylist_personality_prompt: DataTypes.TEXT,
     welcome_message: DataTypes.STRING(500),
-
-    // New fields
     salon_name: DataTypes.STRING(200),
     address: DataTypes.TEXT,
     city: DataTypes.STRING(100),
     state: DataTypes.STRING(100),
     country: { type: DataTypes.STRING(100), defaultValue: 'México' },
     is_active_salon: { type: DataTypes.BOOLEAN, defaultValue: true },
-
-    // System Prompts for Item Generation
     hairstyle_sys_prompt: DataTypes.TEXT,
     color_sys_prompt: DataTypes.TEXT,
-
-    // Look Container Prompts (Transformation)
     look_sys_prompt_1: DataTypes.TEXT,
     look_sys_prompt_2: DataTypes.TEXT,
     look_sys_prompt_3: DataTypes.TEXT,
@@ -56,3 +50,5 @@ export const SalonConfig = sequelize.define('SalonConfig', {
     createdAt: 'created_at',
     updatedAt: 'updated_at'
 });
+
+module.exports = { SalonConfig };

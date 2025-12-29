@@ -1,21 +1,22 @@
-import jwt from 'jsonwebtoken';
-import { User } from '../models/index.js';
+const jwt = require('jsonwebtoken');
+require('dotenv').config();
 
-const SECRET_KEY = process.env.SECRET_KEY || 'default_secret_key_change_me';
-const JWT_EXPIRATION = '24h';
+const JWT_SECRET = process.env.JWT_SECRET || 'fallback_secret_key_change_me';
 
-export const generateToken = (user) => {
+const generateToken = (user) => {
     return jwt.sign(
-        { user_id: user.id, role: user.role },
-        SECRET_KEY,
-        { expiresIn: JWT_EXPIRATION }
+        {
+            user_id: user.id,
+            email: user.email,
+            role: user.role
+        },
+        JWT_SECRET,
+        { expiresIn: '24h' }
     );
 };
 
-export const verifyToken = (token) => {
-    try {
-        return jwt.verify(token, SECRET_KEY);
-    } catch (err) {
-        return null;
-    }
+const verifyToken = (token) => {
+    return jwt.verify(token, JWT_SECRET);
 };
+
+module.exports = { generateToken, verifyToken, JWT_SECRET };

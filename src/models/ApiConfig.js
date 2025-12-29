@@ -1,42 +1,27 @@
-import { DataTypes } from 'sequelize';
-import { sequelize } from '../config/database.js';
+const { DataTypes } = require('sequelize');
+const { sequelize } = require('../config/database.js');
 
-export const ApiConfig = sequelize.define('ApiConfig', {
+const ApiConfig = sequelize.define('ApiConfig', {
     id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true
     },
-    provider: {
-        type: DataTypes.STRING(50),
-        allowNull: false
-        // Removed unique: true to allow multiple keys
-    },
-    section: {
-        type: DataTypes.STRING(32),
-        allowNull: false,
-        defaultValue: 'peinado' // 'peinado' or 'look'
-    },
-    alias: {
+    api_name: {
         type: DataTypes.STRING(100),
-        allowNull: true,
-        defaultValue: 'Default'
+        unique: true
     },
-    api_key: {
-        type: DataTypes.STRING(255),
-        allowNull: false
-    },
+    api_key: DataTypes.TEXT,
     is_active: {
         type: DataTypes.BOOLEAN,
         defaultValue: true
     },
-    settings: {
-        type: DataTypes.JSON,
-        defaultValue: {}
-    }
+    config_json: DataTypes.TEXT
 }, {
     tableName: 'api_configs',
     timestamps: true,
     createdAt: 'created_at',
     updatedAt: 'updated_at'
 });
+
+module.exports = { ApiConfig };

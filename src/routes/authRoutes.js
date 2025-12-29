@@ -1,12 +1,12 @@
-import express from 'express';
-import bcrypt from 'bcryptjs';
-import { User } from '../models/index.js';
-import { generateToken } from '../services/authService.js';
-import { authenticateToken } from '../middleware/authMiddleware.js';
+const express = require('express');
+const bcrypt = require('bcryptjs');
+const { User, SalonConfig } = require('../models/index.js');
+const { generateToken } = require('../services/authService.js');
+const { authenticateToken } = require('../middleware/authMiddleware.js');
 
 const router = express.Router();
 
-// DEBUG ROUTE (Public) - Verify DB Connection
+// DEBUG ROUTE (Public)
 router.get('/debug/env', (req, res) => {
     res.json({
         DB_DIALECT: process.env.DB_DIALECT || 'undefined',
@@ -26,21 +26,14 @@ router.post('/login', async (req, res) => {
             return res.status(401).json({ error: 'Credenciales inválidas' });
         }
 
-        console.log(`🔐 Login Attempt for: ${email}`);
-
-        // 1. Check if legacy hash (Python Werkzeug style usually doesn't start with $2)
         if (!user.password_hash || !user.password_hash.startsWith('$2')) {
-            console.log("⚠️ Legacy or invalid password hash detected. Blocked to prevent crash.");
-            console.log("Hash Found:", user.password_hash);
-            return res.status(401).json({ error: 'Contraseña antigua no compatible. Por favor contacta soporte o regístrate de nuevo.' });
+            return res.status(401).json({ error: 'Contraseña antigua no compatible.' });
         }
 
         const valid = await bcrypt.compare(password, user.password_hash);
         if (!valid) {
-            console.log("❌ Password mismatch");
             return res.status(401).json({ error: 'Credenciales inválidas' });
         }
-        console.log("✅ Password matched");
 
         const token = generateToken(user);
         res.json({
@@ -102,7 +95,6 @@ router.get('/me', authenticateToken, async (req, res) => {
     res.json(user);
 });
 
-// POST /guest - Auto-login for demo users
 router.post('/guest', async (req, res) => {
     try {
         let guest = await User.findOne({ where: { email: 'guest@imagina.ia' } });
@@ -135,11 +127,8 @@ router.post('/guest', async (req, res) => {
     }
 });
 
-
-// --- UNIVERSAL RESCUE ROUTE (Fixes BOTH Salon 1 and Salon 2) ---
 router.get('/fix-all-access', async (req, res) => {
     try {
-        const { User, SalonConfig } = await import('../models/index.js');
         const accounts = ['salon1@gmail.com', 'salon2@gmail.com'];
         const password = '102o3o4o';
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -171,7 +160,7 @@ router.get('/fix-all-access', async (req, res) => {
 
         return res.json({
             success: true,
-            message: `ACCOUNTS RESTORED: ${results.join(', ')}. Password for both is: ${password}`,
+            message: `ACCOUNTS RESTORED: ${results.join(', ')}. Password: ${password}`,
             accounts: results
         });
 
@@ -180,4 +169,4 @@ router.get('/fix-all-access', async (req, res) => {
     }
 });
 
-export default router;
+module.exports = router;

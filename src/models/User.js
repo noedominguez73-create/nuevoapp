@@ -1,7 +1,7 @@
-import { DataTypes } from 'sequelize';
-import { sequelize } from '../config/database.js';
+const { DataTypes } = require('sequelize');
+const { sequelize } = require('../config/database.js');
 
-export const User = sequelize.define('User', {
+const User = sequelize.define('User', {
     id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -23,7 +23,6 @@ export const User = sequelize.define('User', {
         type: DataTypes.STRING(20),
         defaultValue: 'user'
     },
-    // OAuth and other fields can be added as needed, matching python schema
     subscription_status: {
         type: DataTypes.STRING(20),
         defaultValue: 'inactive'
@@ -39,7 +38,8 @@ export const User = sequelize.define('User', {
 }, {
     tableName: 'users',
     timestamps: true,
-    createdAt: 'created_at', // match python column name
-    updatedAt: false // python didn't have updatedAt on User explicitly in snippets shown, but we can enable if needed.
-    // The python code showed `created_at`.
+    createdAt: 'created_at',
+    updatedAt: false
 });
+
+module.exports = { User };

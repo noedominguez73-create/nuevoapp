@@ -1,8 +1,8 @@
-import { User } from './User.js';
-import { SalonConfig } from './SalonConfig.js';
-import { MirrorItem } from './MirrorItem.js';
-import { MirrorUsage } from './MirrorUsage.js';
-import { ApiConfig } from './ApiConfig.js';
+const { User } = require('./User.js');
+const { SalonConfig } = require('./SalonConfig.js');
+const { MirrorItem } = require('./MirrorItem.js');
+const { MirrorUsage } = require('./MirrorUsage.js');
+const { ApiConfig } = require('./ApiConfig.js');
 
 // Associations
 User.hasOne(SalonConfig, { foreignKey: 'user_id', as: 'salonConfig' });
@@ -14,7 +14,7 @@ MirrorUsage.belongsTo(User, { foreignKey: 'user_id' });
 MirrorItem.hasMany(MirrorUsage, { foreignKey: 'item_id' });
 MirrorUsage.belongsTo(MirrorItem, { foreignKey: 'item_id' });
 
-export {
+module.exports = {
     User,
     SalonConfig,
     MirrorItem,

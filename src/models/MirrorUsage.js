@@ -1,33 +1,24 @@
-import { DataTypes } from 'sequelize';
-import { sequelize } from '../config/database.js';
+const { DataTypes } = require('sequelize');
+const { sequelize } = require('../config/database.js');
 
-export const MirrorUsage = sequelize.define('MirrorUsage', {
+const MirrorUsage = sequelize.define('MirrorUsage', {
     id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true
     },
-    usage_type: {
-        type: DataTypes.STRING(50),
-        defaultValue: 'generation'
-    },
     user_id: DataTypes.INTEGER,
     item_id: DataTypes.INTEGER,
-    prompt_tokens: {
+    action_type: DataTypes.STRING(50),
+    tokens_used: {
         type: DataTypes.INTEGER,
-        defaultValue: 0
-    },
-    completion_tokens: {
-        type: DataTypes.INTEGER,
-        defaultValue: 0
-    },
-    total_tokens: {
-        type: DataTypes.INTEGER,
-        defaultValue: 0
+        defaultValue: 1
     }
 }, {
-    tableName: 'mirror_usages',
+    tableName: 'mirror_usage',
     timestamps: true,
     createdAt: 'created_at',
     updatedAt: false
 });
+
+module.exports = { MirrorUsage };
