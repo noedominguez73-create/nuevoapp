@@ -4,9 +4,15 @@ import dotenv from 'dotenv';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
-import { sequelize } from './src/config/database.js';
-import { setupRoutes } from './src/routes/index.js';
-import { User, SalonConfig } from './src/models/index.js';
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
+// import { sequelize } from './src/config/database.js'; // DISABLE DB
+// import { setupRoutes } from './src/routes/index.js'; // DISABLE ROUTES
+// import { User, SalonConfig } from './src/models/index.js'; // DISABLE MODELS
 import bcrypt from 'bcryptjs';
 
 // Configuration
@@ -25,46 +31,21 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// --- DB/CODE DISABLED FOR DEBUGGING ---
+/*
 // --- HOTFIX FOR BROKEN CACHED URLS ---
 app.use((req, res, next) => {
-    // Detect " / fotografia " or similar space-polluted URLs
-    if (req.url.includes('%20fotografia') || req.url.includes(' fotografia')) {
-        console.log("🔥 HOTFIX: Redirecting malformed URL:", req.url);
-        // Clean the URL: remove spaces and normalize
-        // We know the target is /fotografia + query params
-        // Extract query params if any
-        const parts = req.url.split('?');
-        const query = parts.length > 1 ? '?' + parts[1].replace(/%20/g, '').replace(/\s/g, '') : '';
-        // Redirect to clean /fotografia
-        return res.redirect('/fotografia' + query);
-    }
+    // ...
     next();
 });
+*/
 
-// Static Files - Preserving existing frontend structure
-// "app/static" is where the Python app served static files from
+// Static Files
 app.use('/static', express.static(path.join(__dirname, 'app/static')));
-
-// View Engine (Optional: if we want to render templates, though the user said "backend only", 
-// often the "backend" served the HTML. We will serve static HTML or use EJS if needed.
-// For now, let's assume we serve the HTML files from app/templates as static or via endpoints)
-// Actually, Flask renders templates. If the frontend relies on Jinja2 {{ logic }}, we might have a problem.
-// Let's check a template file later to see if it's heavy on Jinja. 
-// For now, we will serve them as static if possible, or sendFile.
 app.use('/', express.static(path.join(__dirname, 'app/templates')));
 
-
-// Initialize DB and SEED Default Admin
-// Pre-Sync Check for Permissions
-// Initialize DB and SEED Default Admin
-// Pre-Sync Check for Permissions
-try {
-    console.log("🔍 DIAGNOSTIC: Starting Server...");
-    console.log("   Process UID:", process.getuid ? process.getuid() : 'N/A (Windows?)');
-} catch (e) {
-    console.error("Diagnostic Check Failed:", e);
-}
-
+// ... DB LOGIC DISABLED ...
+/*
 // --- DB INITIALIZATION WITH SAFETY CHECKS ---
 (async () => {
     try {
@@ -79,30 +60,7 @@ try {
         // --- SEEDER LOGIC ---
         const userCount = await User.count();
         if (userCount === 0) {
-            console.log("🌱 Fresh Database detected. Seeding Default Admin...");
-            const hashedPassword = await bcrypt.hash('admin123', 10);
-
-            // Create Admin User (ID 1)
-            const admin = await User.create({
-                email: 'admin@imagina.ia',
-                password_hash: hashedPassword,
-                full_name: 'Admin Mirror',
-                role: 'admin',
-                monthly_token_limit: 1000,
-                current_month_tokens: 0
-            });
-            console.log("✅ Admin User Created:", admin.email);
-
-            // Create Default Salon Config for Admin
-            await SalonConfig.create({
-                user_id: admin.id,
-                stylist_name: 'Asesora IA',
-                primary_color: '#00ff88',
-                secondary_color: '#00ccff',
-                stylist_voice_name: 'Aoede',
-                is_active: true
-            });
-            console.log("✅ Default SalonConfig Created.");
+           // ...
         }
 
     } catch (error) {
@@ -110,9 +68,10 @@ try {
         console.error("   (Server will continue running in Limited Mode)");
     }
 })();
+*/
 
 // Routes
-setupRoutes(app);
+// setupRoutes(app); // DISABLED
 
 // Serve HTML Pages
 app.get('/', (req, res) => {
