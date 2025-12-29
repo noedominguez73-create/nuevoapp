@@ -26,65 +26,76 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/static', express.static(path.join(__dirname, 'app/static')));
 app.use('/', express.static(path.join(__dirname, 'app/templates')));
 
-// Health Check
-app.get('/health', (req, res) => res.status(200).send(`Server is ALIVE! Mode: STANDARD - Time: ${new Date().toISOString()}`));
+// ==========================================
+// 🚀 OPTIMISTIC STARTUP ARCHITECTURE
+// ==========================================
+// 1. Setup App & Routes immediately.
+// 2. Open Port immediately (to pass Health Checks).
+// 3. Connect Database in Background.
 
-// Initialize Server Logic
+// 1. Setup Routes
+console.log("⏳ Setting up Routes...");
+setupRoutes(app);
+console.log("✅ Routes Configured.");
+
+// 2. Health Check (Enhanced)
+global.DB_STATUS = 'Starting...';
+app.get('/health', (req, res) => {
+    res.status(200).json({
+        status: 'ALIVE',
+        mode: 'OPTIMISTIC_STARTUP',
+        db_status: global.DB_STATUS,
+        time: new Date().toISOString()
+    });
+});
+
+// 3. Start Server (Synchronous/Immediate)
+const server = app.listen(PORT, () => {
+    console.log(`✅ Server bound to port ${PORT}`);
+    console.log(`🌍 Frontend accessible at http://localhost:${PORT}`);
+});
+
+// 4. Connect Database (Background Async)
 (async () => {
+    global.DB_STATUS = 'Connecting...';
     try {
-        console.log("🚀 Starting Server Initialization...");
+        console.log("⏳ Connecting to Database (Background)...");
+        await sequelize.authenticate();
+        console.log("✅ Database Connection ESTABLISHED.");
 
-        // 1. Database Connection
-        try {
-            console.log("⏳ Connecting to Database...");
-            await sequelize.authenticate();
-            console.log("✅ Database Connection ESTABLISHED.");
+        console.log("⏳ Syncing Models...");
+        await sequelize.sync({ alter: true });
+        console.log("✅ Models Synced.");
+        global.DB_STATUS = 'CONNECTED';
 
-            console.log("⏳ Syncing Models...");
-            await sequelize.sync({ alter: true });
-            console.log("✅ Models Synced.");
-
-            // Seeder
-            const userCount = await User.count();
-            if (userCount === 0) {
-                console.log("🌱 Database Empty. Seeding Admin...");
-                const hashedPassword = await bcrypt.hash('admin123', 10);
-                const admin = await User.create({
-                    email: 'admin@imagina.ia',
-                    password_hash: hashedPassword,
-                    full_name: 'Admin Mirror',
-                    role: 'admin',
-                    monthly_token_limit: 1000,
-                    current_month_tokens: 0
-                });
-                await SalonConfig.create({
-                    user_id: admin.id,
-                    stylist_name: 'Asesora IA',
-                    primary_color: '#00ff88',
-                    secondary_color: '#00ccff',
-                    stylist_voice_name: 'Aoede',
-                    is_active: true
-                });
-                console.log("✅ Seeding Complete.");
-            }
-
-        } catch (dbError) {
-            console.error("❌ DATABASE ERROR (Non-Fatal for Server Start):", dbError.message);
-            // We continue so the server can minimally start and we can see logs
+        // Seeder Logic
+        const userCount = await User.count();
+        if (userCount === 0) {
+            console.log("🌱 Database Empty. Seeding Admin...");
+            const hashedPassword = await bcrypt.hash('admin123', 10);
+            const admin = await User.create({
+                email: 'admin@imagina.ia',
+                password_hash: hashedPassword,
+                full_name: 'Admin Mirror',
+                role: 'admin',
+                monthly_token_limit: 1000,
+                current_month_tokens: 0
+            });
+            await SalonConfig.create({
+                user_id: admin.id,
+                stylist_name: 'Asesora IA',
+                primary_color: '#00ff88',
+                secondary_color: '#00ccff',
+                stylist_voice_name: 'Aoede',
+                is_active: true
+            });
+            console.log("✅ Seeding Complete.");
         }
 
-        // 2. Setup Routes
-        console.log("⏳ Setting up Routes...");
-        setupRoutes(app);
-        console.log("✅ Routes Configured.");
-
-        // 3. Bind Port
-        app.listen(PORT, () => {
-            console.log(`✅ Server running on http://localhost:${PORT}`);
-        });
-
-    } catch (fatalError) {
-        console.error("❌ FATAL SERVER ERROR:", fatalError);
+    } catch (dbError) {
+        console.error("❌ DATABASE BACKGROUND ERROR:", dbError.message);
+        global.DB_STATUS = 'ERROR: ' + dbError.message;
+        // Server stays alive!
     }
 })();
 
