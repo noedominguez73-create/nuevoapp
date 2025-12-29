@@ -9,7 +9,21 @@ const ApiConfig = sequelize.define('ApiConfig', {
     },
     api_name: {
         type: DataTypes.STRING(100),
-        unique: true
+        unique: false  // Changed from unique to allow multiple keys
+    },
+    provider: {
+        type: DataTypes.STRING(50),
+        allowNull: false,
+        defaultValue: 'google'
+    },
+    section: {
+        type: DataTypes.STRING(50),
+        allowNull: false,
+        defaultValue: 'peinado'
+    },
+    alias: {
+        type: DataTypes.STRING(100),
+        allowNull: true
     },
     api_key: DataTypes.TEXT,
     is_active: {
