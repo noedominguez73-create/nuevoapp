@@ -6,6 +6,17 @@ import { authenticateToken } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
+// DEBUG ROUTE (Public) - Verify DB Connection
+router.get('/debug/env', (req, res) => {
+    res.json({
+        DB_DIALECT: process.env.DB_DIALECT || 'undefined',
+        DB_HOST: process.env.DB_HOST || 'undefined',
+        DB_USER: process.env.DB_USER || 'undefined',
+        DB_NAME: process.env.DB_NAME || 'undefined',
+        DB_PASS_SET: !!process.env.DB_PASS
+    });
+});
+
 router.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
