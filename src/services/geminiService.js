@@ -16,7 +16,6 @@ const getApiKey = async () => {
 };
 
 const getGenerativeModel = async (fallbackModelName = 'gemini-2.0-flash-exp', section = 'peinado', forceFallback = false) => {
-    const { ApiConfig } = require('../models/index.js');
     const config = await ApiConfig.findOne({ where: { provider: 'google', is_active: true, section } });
 
     if (!config || !config.api_key) {
@@ -27,9 +26,21 @@ const getGenerativeModel = async (fallbackModelName = 'gemini-2.0-flash-exp', se
     }
 
     const apiKey = config.api_key;
-    const selectedModel = (config.settings && config.settings.model && !forceFallback) ? config.settings.model : fallbackModelName;
-    console.log(`Using Gemini Model: ${selectedModel} (Section: ${section})`);
+    let selectedModel = fallbackModelName;
 
+    // Robust settings parsing
+    if (config.settings && !forceFallback) {
+        try {
+            const settings = typeof config.settings === 'string'
+                ? JSON.parse(config.settings)
+                : config.settings;
+            if (settings.model) selectedModel = settings.model;
+        } catch (e) {
+            console.warn("Failed to parse AI settings, using fallback model");
+        }
+    }
+
+    console.log(`Using Gemini Model: ${selectedModel} (Section: ${section})`);
     const genAI = new GoogleGenerativeAI(apiKey);
     return genAI.getGenerativeModel({ model: selectedModel });
 };
@@ -48,8 +59,34 @@ const generateImageDescription = async (prompt, imageBuffer, mimeType = 'image/p
         const text = result.response.text();
         return { text, usageMetadata: result.response.usageMetadata };
     } catch (e) {
-        console.error("Gemini Vision Error:", e);
-        throw e;
+        console.warn(`Gemini Error with primary model: ${e.message}. Retrying with fallback...`);
+        try {
+            // RETRY WITH STABLE FALLBACK MODEL
+            const { ApiConfig } = require('../models/index.js');
+            const fallbackModelName = 'gemini-1.5-flash';
+
+            // Get Key again just in case
+            const config = await ApiConfig.findOne({ where: { provider: 'google', is_active: true, section } });
+            const apiKey = config ? config.api_key : (process.env.GOOGLE_API_KEY || process.env.GEMINI_API_KEY);
+
+            if (!apiKey) throw new Error("No API Key available for fallback");
+
+            const genAI = new GoogleGenerativeAI(apiKey);
+            const fallbackModel = genAI.getGenerativeModel({ model: fallbackModelName });
+
+            const imagePart = {
+                inlineData: {
+                    data: imageBuffer.toString('base64'),
+                    mimeType
+                }
+            };
+            const result = await fallbackModel.generateContent([prompt, imagePart]);
+            return { text: result.response.text(), usageMetadata: result.response.usageMetadata };
+
+        } catch (fallbackError) {
+            console.error("Gemini Vision Validation Error (Fallback also failed):", fallbackError);
+            throw fallbackError; // Throw original error to see details
+        }
     }
 };
 
