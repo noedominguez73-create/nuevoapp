@@ -65,12 +65,18 @@ try {
     console.error("Diagnostic Check Failed:", e);
 }
 
-/*
-sequelize.sync({ alter: true }).then(async () => {
-    console.log('Database synced successfully.');
-
-    // --- SEEDER LOGIC ---
+// --- DB INITIALIZATION WITH SAFETY CHECKS ---
+(async () => {
     try {
+        console.log("⏳ Testing Database Connection...");
+        await sequelize.authenticate();
+        console.log("✅ Connection has been established successfully.");
+
+        console.log("⏳ Syncing Database Models...");
+        await sequelize.sync({ alter: true });
+        console.log("✅ Database synced successfully.");
+
+        // --- SEEDER LOGIC ---
         const userCount = await User.count();
         if (userCount === 0) {
             console.log("🌱 Fresh Database detected. Seeding Default Admin...");
@@ -89,7 +95,7 @@ sequelize.sync({ alter: true }).then(async () => {
 
             // Create Default Salon Config for Admin
             await SalonConfig.create({
-                user_id: admin.id, // Should be 1
+                user_id: admin.id,
                 stylist_name: 'Asesora IA',
                 primary_color: '#00ff88',
                 secondary_color: '#00ccff',
@@ -98,14 +104,12 @@ sequelize.sync({ alter: true }).then(async () => {
             });
             console.log("✅ Default SalonConfig Created.");
         }
-    } catch (seedErr) {
-        console.error("⚠️ Error seeding database:", seedErr);
-    }
 
-}).catch((err) => {
-    console.error('Failed to sync database:', err);
-});
-*/
+    } catch (error) {
+        console.error("❌ DATABASE FATAL ERROR:", error.message);
+        console.error("   (Server will continue running in Limited Mode)");
+    }
+})();
 
 // Routes
 setupRoutes(app);
