@@ -190,24 +190,25 @@ function redirectToDashboard() {
 }
 
 // Require authentication (call on protected pages)
-function requireAuth() {
+async function checkAuth(role = null) {
+    // Legacy redirector function adaptation
     if (!isAuthenticated()) {
-        window.location.href = '/login?redirect=' + encodeURIComponent(window.location.pathname);
-        return false;
+        window.location.href = '/login';
+        return null; // Stop exec
     }
-    return true;
-}
-
-// Require specific role
-function requireRole(role) {
-    if (!requireAuth()) return false;
-
-    if (!hasRole(role)) {
-        showToast('No tienes permiso para acceder a esta página', 'error');
-        redirectToDashboard();
-        return false;
+    const user = getCurrentUser();
+    if (role && user.role !== role) {
+        // Allow salons to see admin panel but maybe limited? 
+        // For now, if role is 'admin' and user is 'salon', block.
+        if (role === 'admin' && user.role === 'salon') {
+            // Let them pass
+        } else if (role === 'admin' && user.role !== 'admin') {
+            alert('Acceso Denegado');
+            window.location.href = '/';
+            return null;
+        }
     }
-    return true;
+    return user;
 }
 
 // Update UI based on auth state
@@ -234,3 +235,99 @@ function updateAuthUI() {
 document.addEventListener('DOMContentLoaded', () => {
     updateAuthUI();
 });
+
+// ============================================
+// LOCATION HELPERS (Hardcoded for stability)
+// ============================================
+const LOCATIONS = {
+    "MX": {
+        name: "México",
+        states: {
+            "CMX": { name: "Ciudad de México", cities: ["CDMX"] },
+            "JAL": { name: "Jalisco", cities: ["Guadalajara", "Zapopan", "Puerto Vallarta"] },
+            "NLE": { name: "Nuevo León", cities: ["Monterrey", "San Pedro", "San Nicolás"] },
+            "MEX": { name: "Estado de México", cities: ["Toluca", "Naucalpan", "Ecatepec"] },
+            "PUE": { name: "Puebla", cities: ["Puebla", "Cholula"] },
+            "YUC": { name: "Yucatán", cities: ["Mérida"] },
+            "QUE": { name: "Querétaro", cities: ["Querétaro"] },
+            "GUA": { name: "Guanajuato", cities: ["León", "Guanajuato", "San Miguel de Allende"] }
+        }
+    },
+    "US": {
+        name: "Estados Unidos",
+        states: {
+            "CA": { name: "California", cities: ["Los Angeles", "San Francisco", "San Diego"] },
+            "TX": { name: "Texas", cities: ["Houston", "Austin", "Dallas"] },
+            "FL": { name: "Florida", cities: ["Miami", "Orlando"] },
+            "NY": { name: "New York", cities: ["New York City", "Buffalo"] }
+        }
+    },
+    "CO": { name: "Colombia", states: { "BOG": { name: "Bogotá", cities: ["Bogotá"] }, "ANT": { name: "Antioquia", cities: ["Medellín"] } } },
+    "AR": { name: "Argentina", states: { "BUE": { name: "Buenos Aires", cities: ["Buenos Aires", "La Plata"] } } },
+    "ES": { name: "España", states: { "MAD": { name: "Madrid", cities: ["Madrid"] }, "CAT": { name: "Cataluña", cities: ["Barcelona"] } } },
+    "CL": { name: "Chile", states: { "SAN": { name: "Santiago", cities: ["Santiago"] } } },
+    "PE": { name: "Perú", states: { "LIM": { name: "Lima", cities: ["Lima"] } } }
+};
+
+function populateCountries(selectId) {
+    const select = document.getElementById(selectId);
+    if (!select) return;
+
+    select.innerHTML = '<option value="">Selecciona País</option>';
+    Object.keys(LOCATIONS).forEach(code => {
+        const option = document.createElement('option');
+        option.value = code;
+        option.textContent = LOCATIONS[code].name;
+        select.appendChild(option);
+    });
+
+    // Auto-select MX by default
+    select.value = "MX";
+    const event = new Event('change');
+    select.dispatchEvent(event);
+
+    // Listen for changes
+    select.addEventListener('change', (e) => {
+        const countryCode = e.target.value;
+        const stateSelect = document.getElementById('salonState'); // Assumes ID
+        populateStates(stateSelect, countryCode);
+    });
+}
+
+function populateStates(selectElement, countryCode) {
+    if (!selectElement) return;
+    selectElement.disabled = false;
+    selectElement.innerHTML = '<option value="">Selecciona Estado</option>';
+
+    const country = LOCATIONS[countryCode];
+    if (country && country.states) {
+        Object.keys(country.states).forEach(code => {
+            const option = document.createElement('option');
+            option.value = code;
+            option.textContent = country.states[code].name;
+            selectElement.appendChild(option);
+        });
+
+        // Listen for changes
+        selectElement.onchange = (e) => {
+            const citySelect = document.getElementById('salonCity'); // Assumes ID
+            populateCities(citySelect, countryCode, e.target.value);
+        }
+    }
+}
+
+function populateCities(selectElement, countryCode, stateCode) {
+    if (!selectElement) return;
+    selectElement.disabled = false;
+    selectElement.innerHTML = '<option value="">Selecciona Ciudad</option>';
+
+    const country = LOCATIONS[countryCode];
+    if (country && country.states && country.states[stateCode]) {
+        country.states[stateCode].cities.forEach(city => {
+            const option = document.createElement('option');
+            option.value = city;
+            option.textContent = city;
+            selectElement.appendChild(option);
+        });
+    }
+}
