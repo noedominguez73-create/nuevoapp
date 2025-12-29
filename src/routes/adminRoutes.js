@@ -10,6 +10,26 @@ const router = express.Router();
 // For now, authenticateToken is a good baseline, and we assume Admin Dashboard is protected.
 router.use(authenticateToken); // Ensure user is logged in
 
+// GET /dashboard - Stats
+router.get('/dashboard', async (req, res) => {
+    try {
+        const totalUsers = await User.count();
+        const totalProfessionals = await User.count({ where: { role: 'professional' } });
+        // Optional: Add more stats like validations pending, total income etc.
+        res.json({
+            success: true,
+            data: {
+                total_users: totalUsers,
+                total_professionals: totalProfessionals,
+                pending_validations: 0,
+                income: 0
+            }
+        });
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
 // GET /salones - List all salons
 router.get('/salones', async (req, res) => {
     try {
