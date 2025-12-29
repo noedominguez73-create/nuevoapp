@@ -28,17 +28,19 @@ if (!fs.existsSync(dbDir)) {
 }
 
 export const sequelize = new Sequelize(
-    process.env.DB_NAME || 'database',
-    process.env.DB_USER || 'user',
-    process.env.DB_PASS || 'password',
+    process.env.DB_NAME || 'u182581262_appnode',
+    process.env.DB_USER || 'u182581262_terminal',
+    process.env.DB_PASS || 'WeK6#VY54+JU4Kn',
     {
-        host: process.env.DB_HOST || 'localhost',
-        dialect: process.env.DB_DIALECT || 'sqlite', // 'mysql' or 'sqlite'
-        storage: dbPath, // Only used for SQLite
-        logging: false, // Reduce noise
-        dialectOptions: process.env.DB_DIALECT === 'mysql' ? {
-            // MySQL specific options if needed (e.g. ssl)
-        } : {},
+        host: process.env.DB_HOST || 'srv994.hstgr.io', // Force correct host
+        dialect: 'mysql', // Force MySQL, ignore SQLite fallback
+        logging: false,
+        dialectOptions: {
+            ssl: {
+                require: false,
+                rejectUnauthorized: false
+            }
+        },
         pool: {
             max: 5,
             min: 0,
