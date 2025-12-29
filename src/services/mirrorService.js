@@ -2,7 +2,7 @@ const { generateImage } = require('./geminiService.js');
 const { saveUploadedFile, saveGeneratedImage } = require('../utils/fileUtils.js');
 const { MirrorUsage, User, SalonConfig, ApiConfig } = require('../models/index.js');
 const fs = require('fs');
-const fetch = require('node-fetch');
+// Using native Node 18 fetch (no import needed)
 
 const buildInpaintingPrompt = (hairstyle, color, instructions) => {
     const parts = [];

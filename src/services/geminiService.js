@@ -67,7 +67,7 @@ const generateImage = async (prompt, originalImageBuffer, mimeType = 'image/png'
     const isImagen = selectedModel.includes('imagen');
 
     if (isImagen) {
-        const fetch = require('node-fetch');
+        // Using native Node 18 fetch
         const url = `https://generativelanguage.googleapis.com/v1beta/${selectedModel}:predict?key=${apiKey}`;
         const response = await fetch(url, {
             method: 'POST',
@@ -133,7 +133,7 @@ const generateSpeech = async (text, voiceName = 'Puck') => {
     const selectedVoice = voiceMap[voiceName] || { name: 'es-ES-Neural2-A', ssmlGender: 'FEMALE' };
     const cleanText = text.replace(/\*\*/g, "").replace(/__/g, "").replace(/##/g, "");
 
-    const fetch = require('node-fetch');
+    // Using native Node 18 fetch
     const url = `https://texttospeech.googleapis.com/v1/text:synthesize?key=${apiKey}`;
 
     const response = await fetch(url, {
