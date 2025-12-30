@@ -1420,6 +1420,66 @@
                 }
             }
         });
+
+        // ============ TEMPORARY DEBUG: Active User Widget ============
+        (function () {
+            const widget = document.createElement('div');
+            widget.id = 'debugUserWidget';
+            widget.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                left: 20px;
+                background: rgba(0, 0, 0, 0.9);
+                border: 2px solid #ff6b00;
+                border-radius: 15px;
+                padding: 15px 20px;
+                color: white;
+                font-family: 'Orbitron', monospace;
+                font-size: 0.85rem;
+                z-index: 9999;
+                box-shadow: 0 0 20px rgba(255, 107, 0, 0.5);
+                cursor: pointer;
+                transition: all 0.3s;
+            `;
+
+            const token = localStorage.getItem('token');
+            let userInfo = { status: '❌ No Session', user: 'Anonymous', id: null, role: null };
+
+            if (token) {
+                try {
+                    const payload = JSON.parse(atob(token.split('.')[1]));
+                    userInfo = {
+                        status: '✅ Active',
+                        user: payload.email || payload.full_name || 'User',
+                        id: payload.user_id || payload.id,
+                        role: payload.role || 'N/A'
+                    };
+                } catch (e) {
+                    userInfo.status = '⚠️ Invalid Token';
+                }
+            }
+
+            widget.innerHTML = `
+                <div style="font-weight: bold; color: #ff6b00; margin-bottom: 8px;">🔍 DEBUG MODE</div>
+                <div><strong>Status:</strong> ${userInfo.status}</div>
+                <div><strong>User:</strong> ${userInfo.user}</div>
+                <div><strong>ID:</strong> ${userInfo.id || 'N/A'}</div>
+                <div><strong>Role:</strong> ${userInfo.role || 'N/A'}</div>
+                <div style="margin-top: 10px; font-size: 0.7rem; color: #888;">Click to close</div>
+            `;
+
+            widget.addEventListener('click', () => widget.remove());
+            widget.addEventListener('mouseover', () => {
+                widget.style.transform = 'scale(1.05)';
+                widget.style.boxShadow = '0 0 30px rgba(255, 107, 0, 0.8)';
+            });
+            widget.addEventListener('mouseout', () => {
+                widget.style.transform = 'scale(1)';
+                widget.style.boxShadow = '0 0 20px rgba(255, 107, 0, 0.5)';
+            });
+
+            document.body.appendChild(widget);
+        })();
     </script>
 </body>
 
