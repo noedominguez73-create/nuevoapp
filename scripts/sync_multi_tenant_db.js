@@ -8,7 +8,7 @@
  * 3. NO modifica tablas existentes
  */
 
-const sequelize = require('../src/config/database');
+const { sequelize } = require('../src/config/database');
 
 // Importar modelos nuevos
 const Organization = require('../src/models/Organization');

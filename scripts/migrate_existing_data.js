@@ -8,7 +8,7 @@
  * 3. Es seguro: solo añade, no elimina nada
  */
 
-const sequelize = require('../src/config/database');
+const { sequelize } = require('../src/config/database');
 const { QueryTypes } = require('sequelize');
 
 async function migrateExistingData() {
