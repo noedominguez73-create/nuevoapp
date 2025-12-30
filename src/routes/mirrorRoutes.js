@@ -367,7 +367,7 @@ router.get('/test-ai', async (req, res) => {
             report.config_found = false;
         }
 
-        const model = await getGenerativeModel('gemini-1.5-flash', 'peinado');
+        const model = await getGenerativeModel('gemini-1.5-flash-latest', 'peinado');
         report.model_selected = model.model; // May not be directly accessible depending on SDK, but helpful
 
         const result = await model.generateContent("Test connection. Valid?");

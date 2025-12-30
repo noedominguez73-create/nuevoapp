@@ -262,9 +262,9 @@ const listAvailableModels = async (section = 'peinado') => {
         // --- FORCE RECOMMENDED MODELS (Inject at TOP) ---
         // Guaranteed selection options regardless of API response
         const forcedModels = [
-            { name: 'gemini-1.5-flash', displayName: '⚡ Gemini v1.5 Flash (RECOMENDADO)' },
+            { name: 'gemini-1.5-flash-latest', displayName: '⚡ Gemini v1.5 Flash (RECOMENDADO)' },
             { name: 'gemini-2.0-flash-exp', displayName: '🧪 Gemini 2.0 Flash Experimental' },
-            { name: 'gemini-1.5-pro', displayName: '🧠 Gemini 1.5 Pro' }
+            { name: 'gemini-1.5-pro-latest', displayName: '🧠 Gemini 1.5 Pro' }
         ];
 
         // Add forced models to start of list (removing duplicates from API list)
@@ -282,7 +282,7 @@ const listAvailableModels = async (section = 'peinado') => {
         console.error(`❌ listAvailableModels failed (${section}):`, error.message);
         // Fallback list
         return [
-            { name: 'gemini-1.5-flash', displayName: '⚡ Gemini v1.5 Flash (Fallback)' },
+            { name: 'gemini-1.5-flash-latest', displayName: '⚡ Gemini v1.5 Flash (Fallback)' },
             { name: 'gemini-2.0-flash-exp', displayName: '🧪 Gemini 2.0 Flash Experimental' }
         ];
     }
