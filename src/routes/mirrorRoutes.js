@@ -343,4 +343,41 @@ router.get('/models', async (req, res) => {
     }
 });
 
+// --- DIAGNOSTIC ROUTE (Temporary) ---
+router.get('/test-ai', async (req, res) => {
+    try {
+        const { getGenerativeModel } = require('../services/geminiService');
+        const { ApiConfig } = require('../models');
+
+        let report = {
+            step: 'Start',
+            config_found: false,
+            api_key_present: false,
+            model_selected: null,
+            generation_result: null,
+            error: null
+        };
+
+        const config = await ApiConfig.findOne({ where: { provider: 'google', is_active: true, section: 'peinado' } });
+        if (config) {
+            report.config_found = true;
+            report.api_key_present = !!config.api_key;
+            report.settings = config.settings;
+        } else {
+            report.config_found = false;
+        }
+
+        const model = await getGenerativeModel('gemini-1.5-flash', 'peinado');
+        report.model_selected = model.model; // May not be directly accessible depending on SDK, but helpful
+
+        const result = await model.generateContent("Test connection. Valid?");
+        report.generation_result = result.response.text();
+
+        res.json({ success: true, report });
+    } catch (e) {
+        console.error("Test AI Failed:", e);
+        res.status(500).json({ success: false, error: e.message, stack: e.stack });
+    }
+});
+
 module.exports = router;
