@@ -69,6 +69,11 @@ app.listen(PORT, () => {
         console.log("⏳ Syncing Models...");
         await sequelize.sync({ alter: true });
         console.log("✅ Models Synced.");
+
+        // Auto-Migration: Fase 2 (ejecuta solo una vez)
+        const { checkAndRunMigrations } = require('./scripts/autoMigrate');
+        await checkAndRunMigrations();
+
         global.DB_STATUS = 'CONNECTED';
 
         // Seeder
