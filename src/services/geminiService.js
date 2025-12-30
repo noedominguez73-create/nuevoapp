@@ -16,6 +16,7 @@ const getApiKey = async () => {
 };
 
 const getGenerativeModel = async (fallbackModelName = 'gemini-2.0-flash-exp', section = 'peinado', forceFallback = false) => {
+    const { ApiConfig } = require('../models/index.js');
     const config = await ApiConfig.findOne({ where: { provider: 'google', is_active: true, section } });
 
     if (!config || !config.api_key) {
@@ -241,35 +242,37 @@ const listAvailableModels = async (section = 'peinado') => {
         const url = `https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`;
         const response = await fetch(url);
 
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error(`❌ Google Models API Error (${response.status}):`, errorText.substring(0, 150));
-            return [];
+        let compatibleModels = [];
+
+        // Try to fetch from API
+        if (response.ok) {
+            const data = await response.json();
+            if (data && Array.isArray(data.models)) {
+                compatibleModels = data.models
+                    .filter(m => m.supportedGenerationMethods?.includes('generateContent'))
+                    .map(m => ({
+                        name: m.name.replace('models/', ''),
+                        displayName: m.displayName || m.name
+                    }));
+            }
+        } else {
+            console.warn(`⚠️ Google Models API Warning (${response.status}) - Using fallback list`);
         }
 
-        const data = await response.json();
+        // --- FORCE RECOMMENDED MODELS (Inject at TOP) ---
+        // Guaranteed selection options regardless of API response
+        const forcedModels = [
+            { name: 'gemini-1.5-flash', displayName: '⚡ Gemini v1.5 Flash (RECOMENDADO)' },
+            { name: 'gemini-2.0-flash-exp', displayName: '🧪 Gemini 2.0 Flash Experimental' },
+            { name: 'gemini-1.5-pro', displayName: '🧠 Gemini 1.5 Pro' }
+        ];
 
-        if (!data || !Array.isArray(data.models)) {
-            console.error(`❌ Invalid API response structure for section: ${section}`);
-            return [];
-        }
-
-        const compatibleModels = data.models
-            .filter(m => m.supportedGenerationMethods?.includes('generateContent'))
-            .map(m => ({
-                name: m.name.replace('models/', ''),
-                displayName: m.displayName || m.name
-            }));
-
-        // Ensure Gemini 1.5 Flash is always present (as requested by user)
-        const flashModelName = 'gemini-1.5-flash';
-        const hasFlash = compatibleModels.some(m => m.name === flashModelName);
-
-        if (!hasFlash) {
-            compatibleModels.unshift({
-                name: flashModelName,
-                displayName: 'Gemini 1.5 Flash (Recommended/Fast)'
-            });
+        // Add forced models to start of list (removing duplicates from API list)
+        for (let i = forcedModels.length - 1; i >= 0; i--) {
+            const forced = forcedModels[i];
+            const idx = compatibleModels.findIndex(m => m.name === forced.name);
+            if (idx > -1) compatibleModels.splice(idx, 1); // remove existing
+            compatibleModels.unshift(forced); // add to top
         }
 
         console.log(`✅ Loaded ${compatibleModels.length} models for ${section}`);
@@ -277,7 +280,11 @@ const listAvailableModels = async (section = 'peinado') => {
 
     } catch (error) {
         console.error(`❌ listAvailableModels failed (${section}):`, error.message);
-        return [];
+        // Fallback list
+        return [
+            { name: 'gemini-1.5-flash', displayName: '⚡ Gemini v1.5 Flash (Fallback)' },
+            { name: 'gemini-2.0-flash-exp', displayName: '🧪 Gemini 2.0 Flash Experimental' }
+        ];
     }
 };
 
@@ -286,7 +293,6 @@ module.exports = {
     getGenerativeModel,
     generateImageDescription,
     generateImage,
-    generateSpeech,
     generateSpeech,
     generateChatResponse,
     listAvailableModels
