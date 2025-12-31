@@ -48,9 +48,8 @@ const getGenerativeModel = async (fallbackModelName = 'gemini-2.0-flash-exp', se
 
 const generateImageDescription = async (prompt, imageBuffer, mimeType = 'image/png', section = 'peinado') => {
     try {
-        // CRITICAL: Use vision-capable model
-        // gemini-1.5-pro has better vision support than flash
-        const model = await getGenerativeModel('gemini-1.5-pro', section);
+        // Use gemini-1.5-flash-latest (current stable vision model)
+        const model = await getGenerativeModel('gemini-1.5-flash-latest', section);
         const imagePart = {
             inlineData: {
                 data: imageBuffer.toString('base64'),

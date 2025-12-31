@@ -11,8 +11,8 @@ console.log('   FORCING HARDCODED CREDENTIALS (DEBUG MODE)');
 
 const sequelize = new Sequelize(
     'u182581262_appnode',      // database
-    'u182581262_terminal',      // username
-    'WeK6#VY54+JU4Kn',         // password
+    'root',                     // username (local MySQL)
+    '1020304050',              // password (local MySQL)
     {
         host: '127.0.0.1',
         port: 3306,
