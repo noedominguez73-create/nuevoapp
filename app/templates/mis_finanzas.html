@@ -5,6 +5,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mis Finanzas - AsesoriaIMSS.io</title>
+
+    <!-- PROTECTION: Block salon users -->
+    <script>
+        (function () {
+            const userStr = localStorage.getItem('asesoriaimss_user');
+            if (userStr) {
+                try {
+                    const user = JSON.parse(userStr);
+                    if (user.role === 'salon') {
+                        window.location.href = '/mirror';
+                    }
+                } catch (e) { }
+            }
+        })();
+    </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
