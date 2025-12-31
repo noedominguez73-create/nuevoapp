@@ -23,19 +23,37 @@ const FinanceAI = {
         }
 
         // 2. DETECT ACCOUNT (Payment Method)
-        // Look for "con [AccountName]" e.g. "con efectivo", "con bancomer"
+        // Look for account mentions like "en efectivo", "con bancomer", "a mi banco"
         // Default to first account if not specified
-        let accountId = FinanceCore.data.accounts[0]?.id;
-        let accountName = FinanceCore.data.accounts[0]?.name;
+        let accountId = null;
+        let accountName = null;
 
         const accounts = FinanceCore.data.accounts;
+
+        // Search for account mentions in the text
         for (const acc of accounts) {
-            // Check if text explicitly mentions the account name
-            if (text.includes(acc.name.toLowerCase())) {
+            const accNameLower = acc.name.toLowerCase();
+
+            // Match variations: "en efectivo", "con efectivo", "efectivo", etc.
+            const patterns = [
+                `en ${accNameLower}`,
+                `con ${accNameLower}`,
+                `a ${accNameLower}`,
+                `al ${accNameLower}`,
+                accNameLower
+            ];
+
+            if (patterns.some(pattern => text.includes(pattern))) {
                 accountId = acc.id;
                 accountName = acc.name;
                 break; // Use the first matching account found
             }
+        }
+
+        // Fallback: Use first available account if none detected
+        if (!accountId && accounts.length > 0) {
+            accountId = accounts[0].id;
+            accountName = accounts[0].name;
         }
 
         // 3. BILLS / PENDING PAYMENTS
