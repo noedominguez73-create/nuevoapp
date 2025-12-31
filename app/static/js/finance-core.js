@@ -49,56 +49,72 @@ const FinanceCore = {
 
     showToast: null, // UI can override this to show toasts
 
-    // --- Persistence ---
-    init() {
+    // --- Persistence (NOW USING MySQL API) ---
+    async init() {
         try {
-            this.loadData();
+            await this.loadData();
+
             if (this.data.accounts.length === 0) {
                 this.seedData();
             }
-            this.log("Initialized", this.data);
+
+            this.log("Initialized from MySQL", this.data);
             this.notifyChange();
 
-            window.addEventListener('storage', (e) => {
-                if (e.key === this.config.storageKey) {
-                    this.log("Syncing data from another tab...");
-                    this.loadData();
-                    this.notifyChange();
-                }
-            });
+            // No longer needed - data syncs via API
+            // Storage events only for same-origin, API handles cross-device sync
         } catch (e) {
             this.error("Initialization failed", e);
+            // Fallback to empty data
+            this.data = {
+                accounts: [],
+                transactions: [],
+                bills: [],
+                receivables: [],
+                todos: [],
+                categories: []
+            };
         }
     },
 
-    loadData() {
+    async loadData() {
         try {
-            const stored = localStorage.getItem(this.config.storageKey);
-            if (stored) {
-                const parsed = JSON.parse(stored);
-                // Validation Step: Ensure structure integrity
-                if (!parsed || typeof parsed !== 'object') throw new Error("Corrupted data");
-
-                this.data = { ...this.data, ...parsed };
-
-                // Restore Dates
-                if (this.data.transactions) this.data.transactions.forEach(t => t.date = new Date(t.date));
-                if (this.data.clients) this.data.clients.forEach(c => c.createdAt = new Date(c.createdAt));
-
-                this.migrateData();
+            if (!window.FinanceAPI) {
+                throw new Error("FinanceAPI not loaded. Include finance-api.js");
             }
+
+            // Load ALL data from MySQL
+            const apiData = await window.FinanceAPI.getAllData();
+
+            this.data = {
+                accounts: apiData.accounts || [],
+                transactions: apiData.transactions || [],
+                bills: apiData.bills || [],
+                receivables: apiData.receivables || [],
+                todos: apiData.todos || [],
+                categories: apiData.categories || []
+            };
+
+            // Restore Dates from API strings
+            if (this.data.transactions) {
+                this.data.transactions.forEach(t => {
+                    t.date = new Date(t.date);
+                });
+            }
+
+            this.log("Loaded from MySQL API:", this.data);
         } catch (e) {
-            this.error("Failed to load data", e);
+            this.error("Failed to load data from API", e);
+            throw e;
         }
     },
 
+    // No longer saves to localStorage - data is saved via API calls
     saveData() {
-        try {
-            localStorage.setItem(this.config.storageKey, JSON.stringify(this.data));
-            this.notifyChange();
-        } catch (e) {
-            this.error("Failed to save data. Storage might be full.", e);
-        }
+        // DEPRECATED: Data is now automatically saved via API on each operation
+        // This method is kept for backward compatibility but does nothing
+        this.log("saveData() called but data is already in MySQL");
+        this.notifyChange();
     },
 
     migrateData() {
@@ -175,29 +191,61 @@ const FinanceCore = {
         return false;
     },
 
-    // --- Accounts ---
-    addAccount(name, type, balance) {
-        const id = Date.now().toString();
-        this.data.accounts.push({
-            id,
-            name: this.sanitizeInput(name),
-            type,
-            balance: parseFloat(balance),
-            color: '#6b7280'
-        });
-        this.saveData();
-        return id;
+    // --- Accounts (NOW USING API) ---
+    async addAccount(name, type = 'cash', balance = 0, color) {
+        try {
+            const accountData = {
+                name: this.sanitizeInput(name),
+                type,
+                balance: parseFloat(balance) || 0,
+                color: color || this.getRandomColor()
+            };
+
+            const newAccount = await window.FinanceAPI.createAccount(accountData);
+            this.data.accounts.push(newAccount);
+            this.notifyChange();
+
+            return newAccount;
+        } catch (error) {
+            this.error('Error creating account', error);
+            throw error;
+        }
     },
 
-    updateAccount(id, updates) {
-        const index = this.data.accounts.findIndex(a => a.id === id);
-        if (index !== -1) {
-            if (updates.name) updates.name = this.sanitizeInput(updates.name);
-            this.data.accounts[index] = { ...this.data.accounts[index], ...updates };
-            this.saveData();
-            return true;
+    async updateAccount(accountId, updates) {
+        try {
+            const account = this.data.accounts.find(a => a.id == accountId);
+            if (!account) throw new Error('Account not found');
+
+            const updatedAccount = await window.FinanceAPI.updateAccount(accountId, updates);
+            Object.assign(account, updatedAccount);
+            this.notifyChange();
+
+            return account;
+        } catch (error) {
+            this.error('Error updating account', error);
+            throw error;
         }
-        return false;
+    },
+
+    async deleteAccount(accountId) {
+        try {
+            await window.FinanceAPI.deleteAccount(accountId);
+
+            const index = this.data.accounts.findIndex(a => a.id == accountId);
+            if (index !== -1) {
+                this.data.accounts.splice(index, 1);
+            }
+
+            // Remove associated transactions
+            this.data.transactions = this.data.transactions.filter(t => t.account_id != accountId);
+
+            this.notifyChange();
+            return true;
+        } catch (error) {
+            this.error('Error deleting account', error);
+            throw error;
+        }
     },
 
     getAccounts() {
