@@ -22,6 +22,7 @@
             scrollbar-width: none;
         }
     </style>
+    <script src="/static/js/beautiful-modal.js"></script>
 </head>
 
 <body class="py-10 px-4">
@@ -278,14 +279,19 @@
             document.getElementById('modalVerCategoria').classList.add('hidden');
         }
 
-        function eliminarItem(event, id, nombreCategoria) {
+        async function eliminarItem(event, id, nombreCategoria) {
             event.stopPropagation();
-            if (confirm("¿Eliminar esta prenda?")) {
+            const confirmed = await BeautifulModal.confirm(
+                '¿Eliminar prenda?',
+                'Esta acción no se puede deshacer.',
+                { danger: true, confirmText: 'Eliminar', cancelText: 'Cancelar' }
+            );
+
+            if (confirmed) {
                 const index = inventario_ia.findIndex(i => i.id === id);
                 if (index !== -1) {
                     inventario_ia.splice(index, 1);
-                    localStorage.setItem('inventario_ia', JSON.stringify(inventario_ia)); // Guardar cambios
-                    // Recargar el modal actual y el grid principal
+                    localStorage.setItem('inventario_ia', JSON.stringify(inventario_ia));
                     abrirCategoria(nombreCategoria);
                     renderizarInventario();
                 }
@@ -295,7 +301,7 @@
         // --- CLASIFICACIÓN ---
         function abrirModal() {
             if (preguardado.length === 0) {
-                alert("No hay ropa en pre-guardado.");
+                BeautifulModal.alert('Sin prendas', 'No hay ropa en pre-guardado.', 'info');
                 return;
             }
             document.getElementById('modalClasificacion').classList.remove('hidden');
@@ -424,11 +430,11 @@
                             console.log("AI Description:", result.description);
                         } else {
                             console.error("Error processing item:", result.error);
-                            alert(`Error al procesar item ${i + 1}: ${result.error}`);
+                            BeautifulModal.alert('Error de procesamiento', `Error al procesar item ${i + 1}: ${result.error}`, 'error');
                         }
                     } catch (e) {
                         console.error("Network error:", e);
-                        alert("Error de conexión al procesar imagen.");
+                        BeautifulModal.alert('Error de conexión', 'No se pudo procesar la imagen. Verifica tu conexión.', 'error');
                     }
                 }
             }
@@ -446,7 +452,7 @@
             btn.disabled = false;
 
             if (processedCount > 0) {
-                alert(`¡${processedCount} prendas analizadas y guardadas con éxito!\n\nLa IA ha generado descripciones detalladas y las ha incrustado en las imágenes.`);
+                BeautifulModal.alert('¡Análisis completo!', `${processedCount} prendas analizadas y guardadas con éxito. La IA ha generado descripciones detalladas.`, 'success');
             }
         }
 
@@ -479,7 +485,7 @@
                 document.getElementById('cameraDesc').textContent = "Ajusta y captura";
                 document.getElementById('camara').onclick = null;
             } catch (err) {
-                alert("Error cámara: " + err.message);
+                BeautifulModal.alert('Error de cámara', 'No se pudo acceder a la cámara: ' + err.message, 'error');
             }
         }
 
@@ -504,7 +510,7 @@
             if (currentPhotoData) {
                 preguardado.push({ id: Date.now(), imagen: currentPhotoData, fecha: new Date().toISOString() });
                 document.getElementById('contadorPreguardado').textContent = preguardado.length;
-                alert("¡Guardado!");
+                BeautifulModal.alert('¡Guardado!', 'Prenda agregada al pre-guardado correctamente.', 'success');
             }
             resetUI();
         }
