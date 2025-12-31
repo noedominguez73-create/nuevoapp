@@ -163,14 +163,37 @@
             { nombre: "Lentes", icono: "🕶️" }
         ];
 
-        document.addEventListener('DOMContentLoaded', () => {
-            // Cargar inventario desde localStorage
-            const savedInventory = localStorage.getItem('inventario_ia');
-            if (savedInventory) {
-                inventario_ia = JSON.parse(savedInventory);
-            }
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Cargar inventario desde API (MySQL)
+            await cargarInventario();
             renderizarInventario();
         });
+
+        // Helper: Get auth token
+        function getToken() {
+            return localStorage.getItem('token');
+        }
+
+        // Load inventory from API
+        async function cargarInventario() {
+            try {
+                const response = await fetch('/api/closet/items', {
+                    headers: {
+                        'Authorization': 'Bearer ' + getToken()
+                    }
+                });
+
+                if (response.ok) {
+                    inventario_ia = await response.json();
+                } else {
+                    console.error('Error al cargar inventario:', response.status);
+                    inventario_ia = [];
+                }
+            } catch (error) {
+                console.error('Error de red:', error);
+                inventario_ia = [];
+            }
+        }
 
         // --- INVENTARIO (CONTENEDORES) ---
         function renderizarInventario() {
@@ -288,12 +311,28 @@
             );
 
             if (confirmed) {
-                const index = inventario_ia.findIndex(i => i.id === id);
-                if (index !== -1) {
-                    inventario_ia.splice(index, 1);
-                    localStorage.setItem('inventario_ia', JSON.stringify(inventario_ia));
-                    abrirCategoria(nombreCategoria);
-                    renderizarInventario();
+                try {
+                    const response = await fetch(`/api/closet/items/${id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': 'Bearer ' + getToken()
+                        }
+                    });
+
+                    if (response.ok) {
+                        // Remove from local array
+                        const index = inventario_ia.findIndex(i => i.id === id);
+                        if (index !== -1) {
+                            inventario_ia.splice(index, 1);
+                        }
+                        abrirCategoria(nombreCategoria);
+                        renderizarInventario();
+                    } else {
+                        BeautifulModal.alert('Error', 'No se pudo eliminar la prenda', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error eliminando:', error);
+                    BeautifulModal.alert('Error de conexión', 'No se pudo eliminar la prenda', 'error');
                 }
             }
         }
@@ -418,16 +457,34 @@
                         const result = await callAIProcess(itemOriginal.imagen, selectCat.value);
 
                         if (result.success) {
-                            inventario_ia.push({
-                                id: Date.now() + i,
-                                categoria: selectCat.value,
-                                ocasion: occasionValue, // Save the occasion metadata
-                                imagen_base64: result.image, // Image with embedded metadata
-                                descripcion_ia: result.description // Save description separately too for easy access
-                            });
-                            indicesAEliminar.push(index);
-                            processedCount++;
-                            console.log("AI Description:", result.description);
+                            // Save to API instead of localStorage
+                            try {
+                                const saveResponse = await fetch('/api/closet/items', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'Authorization': 'Bearer ' + getToken()
+                                    },
+                                    body: JSON.stringify({
+                                        categoria: selectCat.value,
+                                        ocasion: occasionValue,
+                                        imagen_base64: result.image,
+                                        descripcion_ia: result.description
+                                    })
+                                });
+
+                                if (saveResponse.ok) {
+                                    const savedItem = await saveResponse.json();
+                                    inventario_ia.push(savedItem);
+                                    indicesAEliminar.push(index);
+                                    processedCount++;
+                                    console.log("AI Description:", result.description);
+                                } else {
+                                    console.error('Error guardando en API');
+                                }
+                            } catch (saveError) {
+                                console.error('Error de red al guardar:', saveError);
+                            }
                         } else {
                             console.error("Error processing item:", result.error);
                             BeautifulModal.alert('Error de procesamiento', `Error al procesar item ${i + 1}: ${result.error}`, 'error');
@@ -439,9 +496,7 @@
                 }
             }
 
-            // Guardar en localStorage
-            localStorage.setItem('inventario_ia', JSON.stringify(inventario_ia));
-
+            // Ya no guardamos en localStorage - los datos ya están en MySQL
             indicesAEliminar.sort((a, b) => b - a).forEach(idx => preguardado.splice(idx, 1));
 
             document.getElementById('contadorPreguardado').textContent = preguardado.length;
