@@ -598,6 +598,8 @@
         id="camera-input" accept="image/*" capture="environment" class="hidden">
     <!-- Scripts -->
     <script src="/static/js/finance-core.js"></script>
+    <script src="/static/js/receipt-capture.js"></script>
+    <script src="/static/js/finance-ai.js"></script>
     <script>document.addEventListener('DOMContentLoaded', () => {
             FinanceCore.init();
             lucide.createIcons();
@@ -903,6 +905,15 @@
                 const currentDetailId = FinanceCore.getAccounts().find(a => a.name === document.getElementById('detail-account-name').textContent)?.id;
                 if (currentDetailId) showAccountDetails(currentDetailId);
             }
+        }
+
+        // Receipt Photo Capture Functions
+        function triggerCamera(transactionId) {
+            ReceiptCapture.openCamera(transactionId);
+        }
+
+        function triggerUpload(transactionId) {
+            ReceiptCapture.openUpload(transactionId);
         }
 
         function showMainDashboard() {
