@@ -646,6 +646,7 @@
         id="camera-input" accept="image/*" capture="environment" class="hidden">
     <!-- Scripts -->
     <script src="/static/js/finance-core.js"></script>
+    <script src="/static/js/beautiful-modal.js"></script>
     <script src="/static/js/receipt-capture.js"></script>
     <script src="/static/js/finance-ai.js"></script>
     <script>document.addEventListener('DOMContentLoaded', () => {
@@ -1031,7 +1032,7 @@
             const accounts = FinanceCore.getAccounts();
 
             if (accounts.length < 2) {
-                alert("Necesitas al menos 2 cuentas para realizar una transferencia.");
+                BeautifulModal.alert('No puedes transferir', 'Necesitas al menos 2 cuentas para realizar una transferencia.', 'error');
                 return;
             }
 
@@ -1073,13 +1074,12 @@
             const toId = toSelect.value;
             const amount = document.getElementById('transfer-amount').value;
 
-            if (FinanceCore.transfer(fromId, toId, amount)) {
+            const success = FinanceCore.transfer(fromId, toId, amount);
+            if (success) {
                 closeTransferModal();
                 // UI updates automatically via subscription
-            }
-
-            else {
-                alert("Error en la transferencia. Verifica que tengas saldo suficiente.");
+            } else {
+                BeautifulModal.alert('Error en transferencia', 'Verifica que tengas saldo suficiente en la cuenta de origen.', 'error');
             }
         });
 
@@ -1099,7 +1099,7 @@
             const accounts = FinanceCore.getAccounts();
 
             if (accounts.length === 0) {
-                alert("Primero debes crear una cuenta.");
+                BeautifulModal.alert('No hay cuentas', 'Primero debes crear una cuenta antes de agregar movimientos.', 'info');
                 return;
             }
 
