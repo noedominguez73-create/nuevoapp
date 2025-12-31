@@ -66,7 +66,16 @@ const FinanceAI = {
         }
 
         // 4. INCOME
-        if (text.includes('ingreso') || text.includes('gané') || text.includes('pagaron') || text.includes('depositaron')) {
+        // Expanded keywords for income detection
+        const incomeKeywords = [
+            'ingreso', 'gané', 'pagaron', 'depositaron',
+            'recibí', 'depósito', 'cobré', 'cobranza',
+            'venta', 'vendí', 'entraron', 'me dieron'
+        ];
+
+        const isIncome = incomeKeywords.some(keyword => text.includes(keyword));
+
+        if (isIncome) {
             if (amount > 0) {
                 FinanceCore.addTransaction('income', amount, 'Salario', text, accountId);
                 return { type: 'success', message: `Ingreso de $${amount} registrado en ${accountName}.` };
