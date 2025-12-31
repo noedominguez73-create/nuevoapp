@@ -234,7 +234,7 @@ router.post('/items', upload.single('file'), async (req, res) => {
 
                     // Use active model (handled by getGenerativeModel inside service) + system prompt
                     // Explicitly pass 'peinado' section to ensure correct API key and model usage
-                    const descResult = await generateImageDescription(sysPrompt, req.file.buffer, req.file.mimetype, 'peinado');
+                    const descResult = await generateImageDescription(sysPrompt, req.file.buffer, req.file.mimetype, 'peinado', organizationId);
                     finalPrompt = descResult.text;
                     console.log('✅ [AI] Prompt generado exitosamente:', finalPrompt.substring(0, 100) + '...');
                 } catch (err) {
