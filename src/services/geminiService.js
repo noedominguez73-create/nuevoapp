@@ -46,48 +46,24 @@ const getGenerativeModel = async (fallbackModelName = 'gemini-2.0-flash-exp', se
     return genAI.getGenerativeModel({ model: selectedModel });
 };
 
-const generateImageDescription = async (prompt, imageBuffer, mimeType = 'image/png', section = 'peinado') => {
+/**
+ * Generate image description using multi-tenant AI Service
+ * @param {number} organizationId - Organization ID (required)
+ */
+const generateImageDescription = async (prompt, imageBuffer, mimeType = 'image/jpeg', section = 'peinado', organizationId) => {
     try {
-        // Use gemini-1.5-flash-latest (current stable vision model)
-        const model = await getGenerativeModel('gemini-1.5-flash-latest', section);
-        const imagePart = {
-            inlineData: {
-                data: imageBuffer.toString('base64'),
-                mimeType
-            }
-        };
-        const result = await model.generateContent([prompt, imagePart]);
-        const text = result.response.text();
-        return { text, usageMetadata: result.response.usageMetadata };
-    } catch (e) {
-        console.warn(`Gemini Error with primary model: ${e.message}. Retrying with fallback...`);
-        try {
-            // RETRY WITH STABLE FALLBACK MODEL
-            const { ApiConfig } = require('../models/index.js');
-            const fallbackModelName = 'gemini-1.5-flash';
+        if (!organizationId) throw new Error('organizationId required');
 
-            // Get Key again just in case
-            const config = await ApiConfig.findOne({ where: { provider: 'google', is_active: true, section } });
-            const apiKey = config ? config.api_key : (process.env.GOOGLE_API_KEY || process.env.GEMINI_API_KEY);
+        const { AIService } = require('./ai/index');
+        const aiService = new AIService(organizationId, section);
 
-            if (!apiKey) throw new Error("No API Key available for fallback");
+        console.log(`🤖 [Org ${organizationId}] Analyzing image...`);
+        const result = await aiService.analyzeImage(imageBuffer, prompt, mimeType);
 
-            const genAI = new GoogleGenerativeAI(apiKey);
-            const fallbackModel = genAI.getGenerativeModel({ model: fallbackModelName });
-
-            const imagePart = {
-                inlineData: {
-                    data: imageBuffer.toString('base64'),
-                    mimeType
-                }
-            };
-            const result = await fallbackModel.generateContent([prompt, imagePart]);
-            return { text: result.response.text(), usageMetadata: result.response.usageMetadata };
-
-        } catch (fallbackError) {
-            console.error("Gemini Vision Validation Error (Fallback also failed):", fallbackError);
-            throw fallbackError; // Throw original error to see details
-        }
+        return { text: result.text, usageMetadata: result.tokens || {} };
+    } catch (error) {
+        console.error(`❌ [Org ${organizationId}] Image analysis failed:`, error.message);
+        throw error;
     }
 };
 
