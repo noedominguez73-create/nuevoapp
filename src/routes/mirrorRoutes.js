@@ -204,9 +204,13 @@ router.post('/items', upload.single('file'), async (req, res) => {
         }
 
         if (req.file) {
+            console.log('📸 [UPLOAD] Imagen recibida:', req.file.originalname, `(${req.file.size} bytes)`);
             const saved = saveUploadedFile(req.file, 'items');
             image_url = saved.url;
+            console.log('💾 [UPLOAD] Imagen guardada en:', image_url);
+
             if (!finalPrompt) {
+                console.log('🤖 [AI] Iniciando generación de prompt automático...');
                 try {
                     // Get system prompt based on category (filtered by org)
                     const config = await SalonConfig.findOne({
@@ -225,15 +229,22 @@ router.post('/items', upload.single('file'), async (req, res) => {
                         }
                     }
 
+                    console.log('📝 [AI] System prompt:', sysPrompt.substring(0, 100) + '...');
+                    console.log('🔑 [AI] Llamando a Gemini con modelo gemini-1.5-flash (section: peinado)...');
+
                     // Use active model (handled by getGenerativeModel inside service) + system prompt
                     // Explicitly pass 'peinado' section to ensure correct API key and model usage
                     const descResult = await generateImageDescription(sysPrompt, req.file.buffer, req.file.mimetype, 'peinado');
                     finalPrompt = descResult.text;
+                    console.log('✅ [AI] Prompt generado exitosamente:', finalPrompt.substring(0, 100) + '...');
                 } catch (err) {
-                    console.error("Auto-prompt generation failed:", err);
+                    console.error("❌ [AI] Auto-prompt generation failed:", err.message);
+                    console.error("❌ [AI] Stack:", err.stack);
                     // Include more details in the error message for debugging
                     finalPrompt = `Auto-prompt failed: ${err.message}`;
                 }
+            } else {
+                console.log('ℹ️  [UPLOAD] Prompt ya proporcionado, no se generará automáticamente');
             }
         }
 
