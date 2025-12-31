@@ -23,6 +23,23 @@
             color: #111827;
             font-weight: 500;
         }
+
+        /* Modal Animation */
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95) translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .animate-slideIn {
+            animation: slideIn 0.2s ease-out;
+        }
     </style>
 </head>
 
@@ -594,6 +611,37 @@
             </form>
         </div>
     </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="delete-confirm-modal"
+        class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
+        <div
+            class="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl transform transition-all scale-100 animate-slideIn">
+            <!-- Icon -->
+            <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i data-lucide="alert-triangle" class="h-8 w-8 text-red-600"></i>
+            </div>
+
+            <!-- Content -->
+            <h3 class="text-xl font-bold text-gray-900 text-center mb-2">¿Eliminar movimiento?</h3>
+            <p class="text-sm text-gray-500 text-center mb-6" id="delete-confirm-message">
+                Esta acción no se puede deshacer. El balance de tu cuenta se ajustará automáticamente.
+            </p>
+
+            <!-- Buttons -->
+            <div class="flex gap-3">
+                <button onclick="cancelDelete()"
+                    class="flex-1 px-4 py-3 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 transition-colors">
+                    Cancelar
+                </button>
+                <button onclick="confirmDelete()"
+                    class="flex-1 px-4 py-3 bg-red-600 text-white rounded-xl font-medium hover:bg-red-700 transition-colors shadow-lg shadow-red-200">
+                    Eliminar
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Hidden File Inputs --><input type="file" id="upload-input" accept="image/*" class="hidden"><input type="file"
         id="camera-input" accept="image/*" capture="environment" class="hidden">
     <!-- Scripts -->
@@ -898,13 +946,35 @@
             }
         });
 
+        // Delete Confirmation Modal Logic
+        let pendingDeleteId = null;
+
         function deleteMovement(id) {
-            if (confirm("¿Estás seguro de eliminar este movimiento?")) {
-                FinanceCore.deleteTransaction(id);
-                // Refresh details view
+            // Store the ID for later
+            pendingDeleteId = id;
+
+            // Show beautiful modal
+            const modal = document.getElementById('delete-confirm-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            lucide.createIcons();
+        }
+
+        function confirmDelete() {
+            if (pendingDeleteId) {
+                FinanceCore.deleteTransaction(pendingDeleteId);
                 const currentDetailId = FinanceCore.getAccounts().find(a => a.name === document.getElementById('detail-account-name').textContent)?.id;
                 if (currentDetailId) showAccountDetails(currentDetailId);
+                pendingDeleteId = null;
             }
+            cancelDelete();
+        }
+
+        function cancelDelete() {
+            const modal = document.getElementById('delete-confirm-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            pendingDeleteId = null;
         }
 
         // Receipt Photo Capture Functions
