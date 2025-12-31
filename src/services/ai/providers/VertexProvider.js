@@ -43,7 +43,7 @@ class VertexProvider extends AIProvider {
 
     async analyzeImage(imageData, prompt, mimeType = 'image/jpeg', retries = 3) {
         const model = this.vertexAI.getGenerativeModel({
-            model: 'gemini-1.5-flash-002', // Immutable version for stability
+            model: 'gemini-1.5-flash', // Versión genérica (sin -002 para compatibilidad)
             safetySettings: [
                 {
                     category: 'HARM_CATEGORY_DANGEROUS_CONTENT',
