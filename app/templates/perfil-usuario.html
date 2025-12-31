@@ -125,7 +125,17 @@
                     if (nameEl) nameEl.textContent = user.full_name || 'Usuario';
                     if (emailEl) emailEl.textContent = user.email || '';
 
-                    // 2. RESTRICT SALON ACCESS (Redirect Loop Prevention)
+                    // 2. HIDE MIRROR IA FOR NON-SALON USERS
+                    const isSalon = user.role === 'salon' || user.is_salon_owner;
+                    if (!isSalon) {
+                        // Hide Mirror IA from sidebar
+                        const mirrorLink = document.querySelector('a[href="/mirror"]');
+                        if (mirrorLink) {
+                            mirrorLink.style.display = 'none';
+                        }
+                    }
+
+                    // 3. RESTRICT SALON ACCESS (Redirect Loop Prevention)
                     if (user.is_salon_owner && !window.location.pathname.includes('/mirror')) {
                         // Force redirect back to mirror if they wander off
                         window.location.href = '/mirror';
