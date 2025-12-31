@@ -8,9 +8,28 @@ require('dotenv').config();
 const { sequelize } = require('./src/config/database.js');
 const { setupRoutes } = require('./src/routes/index.js');
 const { User, SalonConfig } = require('./src/models/index.js');
+const jwt = require('jsonwebtoken');
+const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret_key_change_in_production';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Middleware to block salon users from finance pages
+const blockSalonFromFinance = (req, res, next) => {
+    const authHeader = req.headers.authorization || req.headers.Authorization;
+    if (!authHeader) return next();
+
+    try {
+        const token = authHeader.replace('Bearer ', '');
+        const decoded = jwt.verify(token, JWT_SECRET);
+        if (decoded.role === 'salon') {
+            return res.redirect('/mirror');
+        }
+        next();
+    } catch (err) {
+        next();
+    }
+};
 
 // Middleware
 app.use(cors());
@@ -119,13 +138,13 @@ app.get('/avatar', (req, res) => res.sendFile(path.join(__dirname, 'app/template
 app.get('/cambio-de-imagen', (req, res) => res.sendFile(path.join(__dirname, 'app/templates/cambio_de_imagen.html')));
 app.get('/fotografia', (req, res) => res.sendFile(path.join(__dirname, 'app/templates/fotografia.html')));
 app.get('/profesional', (req, res) => res.sendFile(path.join(__dirname, 'app/templates/profesional.html')));
-app.get('/mis-finanzas', (req, res) => res.sendFile(path.join(__dirname, 'app/templates/mis_finanzas.html')));
-app.get('/mis-finanzas/dashboard', (req, res) => res.sendFile(path.join(__dirname, 'app/templates/mis_finanzas_dashboard.html')));
-app.get('/mis-finanzas/ingresos', (req, res) => res.sendFile(path.join(__dirname, 'app/templates/mis_finanzas_ingresos.html')));
-app.get('/mis-finanzas/pagos', (req, res) => res.sendFile(path.join(__dirname, 'app/templates/mis_finanzas_pagos.html')));
-app.get('/mis-finanzas/facturas', (req, res) => res.sendFile(path.join(__dirname, 'app/templates/mis_finanzas_facturas.html')));
-app.get('/mis-finanzas/pendientes', (req, res) => res.sendFile(path.join(__dirname, 'app/templates/mis_finanzas_pendientes.html')));
-app.get('/mis-finanzas/reportes', (req, res) => res.sendFile(path.join(__dirname, 'app/templates/mis_finanzas_reportes.html')));
+app.get('/mis-finanzas', blockSalonFromFinance, (req, res) => res.sendFile(path.join(__dirname, 'app/templates/mis_finanzas.html')));
+app.get('/mis-finanzas/dashboard', blockSalonFromFinance, (req, res) => res.sendFile(path.join(__dirname, 'app/templates/mis_finanzas_dashboard.html')));
+app.get('/mis-finanzas/ingresos', blockSalonFromFinance, (req, res) => res.sendFile(path.join(__dirname, 'app/templates/mis_finanzas_ingresos.html')));
+app.get('/mis-finanzas/pagos', blockSalonFromFinance, (req, res) => res.sendFile(path.join(__dirname, 'app/templates/mis_finanzas_pagos.html')));
+app.get('/mis-finanzas/facturas', blockSalonFromFinance, (req, res) => res.sendFile(path.join(__dirname, 'app/templates/mis_finanzas_facturas.html')));
+app.get('/mis-finanzas/pendientes', blockSalonFromFinance, (req, res) => res.sendFile(path.join(__dirname, 'app/templates/mis_finanzas_pendientes.html')));
+app.get('/mis-finanzas/reportes', blockSalonFromFinance, (req, res) => res.sendFile(path.join(__dirname, 'app/templates/mis_finanzas_reportes.html')));
 app.get('/admin-login', (req, res) => res.sendFile(path.join(__dirname, 'app/templates/admin-login.html')));
 app.get('/admin-mirror', (req, res) => res.sendFile(path.join(__dirname, 'app/templates/admin_mirror.html')));
 app.get('/api/mirror/control-pantalla', (req, res) => res.sendFile(path.join(__dirname, 'app/templates/control_pantalla.html')));
