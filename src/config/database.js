@@ -1,28 +1,46 @@
 const { Sequelize } = require('sequelize');
+require('dotenv').config();
 
 /**
  * ==========================================
- * DATABASE CONFIGURATION - HARDCODED FOR DEBUGGING
+ * DATABASE CONFIGURATION - ENVIRONMENT VARIABLES
  * ==========================================
+ * 
+ * Variables requeridas en .env:
+ * - DB_HOST (default: 127.0.0.1)
+ * - DB_PORT (default: 3306)
+ * - DB_NAME (REQUERIDO)
+ * - DB_USER (REQUERIDO)
+ * - DB_PASSWORD (REQUERIDO)
  */
 
 console.log('🔌 Initializing Database Connection...');
-console.log('   FORCING HARDCODED CREDENTIALS (DEBUG MODE)');
+console.log(`   Environment: ${process.env.NODE_ENV || 'development'}`);
+console.log(`   Database: ${process.env.DB_NAME || 'NOT_SET'}`);
+
+// Validar variables críticas
+if (!process.env.DB_NAME || !process.env.DB_USER) {
+    console.error('❌ ERROR: Database credentials not configured!');
+    console.error('   Please set DB_NAME and DB_USER in your .env file');
+    if (process.env.NODE_ENV === 'production') {
+        throw new Error('Database credentials missing in production!');
+    }
+}
 
 const sequelize = new Sequelize(
-    'u182581262_appnode',      // database
-    'root',                     // username (local MySQL)
-    '1020304050',              // password (local MySQL)
+    process.env.DB_NAME || 'u182581262_appnode',
+    process.env.DB_USER || 'root',
+    process.env.DB_PASSWORD || '',
     {
-        host: '127.0.0.1',
-        port: 3306,
+        host: process.env.DB_HOST || '127.0.0.1',
+        port: parseInt(process.env.DB_PORT) || 3306,
         dialect: 'mysql',
 
-        logging: false,
+        logging: process.env.DB_LOGGING === 'true' ? console.log : false,
 
         pool: {
-            max: 10,
-            min: 0,
+            max: parseInt(process.env.DB_POOL_MAX) || 10,
+            min: parseInt(process.env.DB_POOL_MIN) || 0,
             acquire: 30000,
             idle: 10000
         },
@@ -30,7 +48,10 @@ const sequelize = new Sequelize(
         dialectOptions: {
             family: 4,              // Force IPv4
             connectTimeout: 10000,
-            ssl: false,
+            ssl: process.env.DB_SSL === 'true' ? {
+                require: true,
+                rejectUnauthorized: false
+            } : false,
             charset: 'utf8mb4',
             timezone: '+00:00'
         },
@@ -56,11 +77,10 @@ const sequelize = new Sequelize(
     }
 );
 
-console.log('✅ Sequelize instance created with HARDCODED credentials');
-console.log('   DB: u182581262_appnode');
-console.log('   User: u182581262_terminal');
-console.log('   Host: 127.0.0.1:3306');
-console.log('   Password: ***HARDCODED***');
+console.log('✅ Sequelize instance created');
+console.log(`   Host: ${process.env.DB_HOST || '127.0.0.1'}:${process.env.DB_PORT || 3306}`);
+console.log(`   User: ${process.env.DB_USER || 'NOT_SET'}`);
+console.log('   Password: ***PROTECTED***');
 
 async function testConnection() {
     try {
@@ -69,6 +89,9 @@ async function testConnection() {
         return true;
     } catch (error) {
         console.error('❌ Database connection failed:', error.message);
+        if (process.env.NODE_ENV === 'production') {
+            console.error('   This is CRITICAL in production!');
+        }
         return false;
     }
 }

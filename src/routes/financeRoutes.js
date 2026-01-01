@@ -5,11 +5,8 @@
 
 const express = require('express');
 const router = express.Router();
-const FinanceAccount = require('../models/FinanceAccount');
-const FinanceTransaction = require('../models/FinanceTransaction');
-const FinanceBill = require('../models/FinanceBill');
-const { FinanceReceivable, FinanceTodo, FinanceCategory } = require('../models/FinanceModels');
-const { authenticateToken } = require('../middleware/auth');
+const { FinanceAccount, FinanceTransaction, FinanceBill, FinanceReceivable, FinanceTodo, FinanceCategory } = require('../models/index');
+const { authenticateToken } = require('../middleware/authMiddleware.js');
 
 // Middleware: All routes require authentication
 router.use(authenticateToken);

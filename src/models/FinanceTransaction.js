@@ -56,4 +56,4 @@ const FinanceTransaction = sequelize.define('FinanceTransaction', {
     ]
 });
 
-module.exports = FinanceTransaction;
+module.exports = { FinanceTransaction };

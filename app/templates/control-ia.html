@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Centro de Control de IA | CompletMirror.io</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FAFAFA;
+        }
+
+        h1,
+        h2,
+        h3,
+        .font-serif {
+            font-family: 'Playfair Display', serif;
+        }
+
+        .tab-active {
+            border-bottom: 3px solid #8b5cf6;
+            color: #8b5cf6;
+            background: #f5f3ff;
+        }
+    </style>
+</head>
+
+<body class="text-gray-800">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <aside class="hidden md:flex flex-col w-64 bg-white border-r border-gray-100 h-full fixed left-0 top-0 z-10">
+            <div class="p-8">
+                <a href="/admin"
+                    class="block text-2xl font-serif font-bold text-blue-600 tracking-tight">CompletMirror.io</a>
+            </div>
+            <nav class="flex-1 px-4 space-y-2">
+                <a href="/admin"
+                    class="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl text-gray-600 hover:bg-gray-50 transition">
+                    <i data-lucide="layout-dashboard" class="h-5 w-5"></i> Panel de Administración
+                </a>
+                <a href="/control-ia"
+                    class="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl bg-purple-50 text-purple-600">
+                    <i data-lucide="brain" class="h-5 w-5"></i> Control de IA
+                </a>
+            </nav>
+            <div class="p-4 border-t border-gray-100">
+                <div class="flex items-center gap-3 p-3 rounded-xl bg-gray-50">
+                    <div
+                        class="h-10 w-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">
+                        A</div>
+                    <div>
+                        <p class="text-sm font-bold text-gray-900">Admin Mirror</p>
+                        <p class="text-xs text-gray-500">admin@imagina.ia</p>
+                    </div>
+                </div>
+                <button onclick="logout()"
+                    class="mt-4 w-full flex items-center justify-center gap-2 text-rose-500 text-xs font-bold hover:text-rose-700">
+                    <span class="w-1 h-4 bg-rose-500 rounded-full"></span> Cerrar Sesión
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 md:ml-64 h-full overflow-y-auto">
+            <div class="p-8 max-w-7xl mx-auto">
+                <div class="mb-8">
+                    <h1 class="font-serif text-3xl text-gray-900 font-bold mb-2">Centro de Control de IA</h1>
+                    <p class="text-gray-500">Gestiona modelos de IA, API Keys y monitorea el consumo global del sistema
+                    </p>
+                </div>
+
+                <!-- Tabs -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 mb-6">
+                    <div class="flex border-b border-gray-100">
+                        <button onclick="switchTab('ais')" id="tabAIs"
+                            class="tab-active flex-1 px-6 py-4 text-sm font-semibold transition">
+                            <i data-lucide="cpu" class="h-4 w-4 inline mr-2"></i> IAs Específicas
+                        </button>
+                        <button onclick="switchTab('keys')" id="tabKeys"
+                            class="flex-1 px-6 py-4 text-sm font-semibold text-gray-600 hover:bg-gray-50 transition">
+                            <i data-lucide="key" class="h-4 w-4 inline mr-2"></i> API Keys
+                        </button>
+                        <button onclick="switchTab('stats')" id="tabStats"
+                            class="flex-1 px-6 py-4 text-sm font-semibold text-gray-600 hover:bg-gray-50 transition">
+                            <i data-lucide="bar-chart-3" class="h-4 w-4 inline mr-2"></i> Estadísticas
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tab: IAs Específicas -->
+                <div id="contentAIs" class="tab-content">
+                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                        <div class="flex justify-between items-center mb-6">
+                            <div>
+                                <h3 class="font-serif text-xl font-bold text-gray-900">IAs Configuradas</h3>
+                                <p class="text-sm text-gray-500 mt-1">Gestiona las IAs específicas del sistema</p>
+                            </div>
+                            <button onclick="openNewAI()"
+                                class="px-6 py-3 bg-purple-600 text-white rounded-xl font-semibold hover:bg-purple-700 transition shadow-lg flex items-center gap-2">
+                                <i data-lucide="plus" class="h-5 w-5"></i>
+                                Agregar Nueva IA
+                            </button>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead>
+                                    <tr class="border-b border-gray-100">
+                                        <th class="text-left pb-4 text-xs font-bold text-gray-400 uppercase">IA</th>
+                                        <th class="text-left pb-4 text-xs font-bold text-gray-400 uppercase">Función
+                                        </th>
+                                        <th class="text-left pb-4 text-xs font-bold text-gray-400 uppercase">Proveedor
+                                        </th>
+                                        <th class="text-left pb-4 text-xs font-bold text-gray-400 uppercase">Estado</th>
+                                        <th class="text-left pb-4 text-xs font-bold text-gray-400 uppercase">Consumo
+                                        </th>
+                                        <th class="text-right pb-4 text-xs font-bold text-gray-400 uppercase">Acciones
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody id="aisTableBody">
+                                    <tr>
+                                        <td colspan="6" class="py-8 text-center text-gray-400">
+                                            <i data-lucide="loader" class="h-8 w-8 mx-auto animate-spin mb-2"></i>
+                                            <p>Cargando IAs...</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab: API Keys -->
+                <div id="contentKeys" class="tab-content hidden">
+                    <div class="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 max-w-3xl">
+                        <h3 class="font-serif text-xl font-bold mb-6">Gestión de API Keys</h3>
+                        <form id="keysForm" class="space-y-6">
+                            <!-- Gemini -->
+                            <div>
+                                <label class="flex items-center gap-2 text-sm font-bold text-gray-700 mb-2">
+                                    <i data-lucide="sparkles" class="h-4 w-4 text-purple-600"></i> Google Gemini API Key
+                                </label>
+                                <div class="flex gap-2">
+                                    <input type="password" id="geminiKey"
+                                        class="flex-1 px-4 py-3 rounded-xl border border-gray-200 outline-none focus:border-purple-500"
+                                        placeholder="AIzaSy...">
+                                    <button type="button" onclick="toggleKeyVisibility('geminiKey')"
+                                        class="px-4 py-3 bg-gray-100 hover:bg-gray-200 rounded-xl transition">
+                                        <i data-lucide="eye" class="h-5 w-5"></i>
+                                    </button>
+                                </div>
+                                <p id="geminiStatus" class="text-xs mt-2"></p>
+                            </div>
+                            <!-- OpenAI -->
+                            <div>
+                                <label class="flex items-center gap-2 text-sm font-bold text-gray-700 mb-2">
+                                    <i data-lucide="bot" class="h-4 w-4 text-emerald-600"></i> OpenAI API Key
+                                </label>
+                                <div class="flex gap-2">
+                                    <input type="password" id="openaiKey"
+                                        class="flex-1 px-4 py-3 rounded-xl border border-gray-200 outline-none focus:border-emerald-500"
+                                        placeholder="sk-...">
+                                    <button type="button" onclick="toggleKeyVisibility('openaiKey')"
+                                        class="px-4 py-3 bg-gray-100 hover:bg-gray-200 rounded-xl transition">
+                                        <i data-lucide="eye" class="h-5 w-5"></i>
+                                    </button>
+                                </div>
+                                <p id="openaiStatus" class="text-xs mt-2"></p>
+                            </div>
+                            <!-- Replicate -->
+                            <div>
+                                <label class="flex items-center gap-2 text-sm font-bold text-gray-700 mb-2">
+                                    <i data-lucide="image" class="h-4 w-4 text-blue-600"></i> Replicate API Token
+                                </label>
+                                <div class="flex gap-2">
+                                    <input type="password" id="replicateKey"
+                                        class="flex-1 px-4 py-3 rounded-xl border border-gray-200 outline-none focus:border-blue-500"
+                                        placeholder="r8_...">
+                                    <button type="button" onclick="toggleKeyVisibility('replicateKey')"
+                                        class="px-4 py-3 bg-gray-100 hover:bg-gray-200 rounded-xl transition">
+                                        <i data-lucide="eye" class="h-5 w-5"></i>
+                                    </button>
+                                </div>
+                                <p id="replicateStatus" class="text-xs mt-2"></p>
+                            </div>
+                            <!-- Anthropic (Claude) -->
+                            <div>
+                                <label class="flex items-center gap-2 text-sm font-bold text-gray-700 mb-2">
+                                    <i data-lucide="brain" class="h-4 w-4 text-orange-600"></i> Anthropic (Claude) API
+                                    Key
+                                </label>
+                                <div class="flex gap-2">
+                                    <input type="password" id="anthropicKey"
+                                        class="flex-1 px-4 py-3 rounded-xl border border-gray-200 outline-none focus:border-orange-500"
+                                        placeholder="sk-ant-...">
+                                    <button type="button" onclick="toggleKeyVisibility('anthropicKey')"
+                                        class="px-4 py-3 bg-gray-100 hover:bg-gray-200 rounded-xl transition">
+                                        <i data-lucide="eye" class="h-5 w-5"></i>
+                                    </button>
+                                </div>
+                                <p id="anthropicStatus" class="text-xs mt-2"></p>
+                            </div>
+                            <button type="submit"
+                                class="w-full bg-purple-600 text-white font-bold py-4 rounded-xl hover:bg-purple-700 transition shadow-lg">
+                                Guardar API Keys
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Tab: Estadísticas -->
+                <div id="contentStats" class="tab-content hidden">
+                    <div class="grid md:grid-cols-3 gap-6 mb-6">
+                        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                            <p class="text-xs font-bold text-gray-400 uppercase mb-2">Total Tokens</p>
+                            <p id="statTotalTokens" class="text-3xl font-serif font-bold text-purple-600">0</p>
+                        </div>
+                        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                            <p class="text-xs font-bold text-gray-400 uppercase mb-2">Total Imágenes</p>
+                            <p id="statTotalImages" class="text-3xl font-serif font-bold text-blue-600">0</p>
+                        </div>
+                        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                            <p class="text-xs font-bold text-gray-400 uppercase mb-2">Costo Estimado</p>
+                            <p id="statTotalCost" class="text-3xl font-serif font-bold text-emerald-600">$0.00</p>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                        <h3 class="font-serif text-xl font-bold mb-4">Consumo por IA</h3>
+                        <div id="statsTable" class="space-y-3">
+                            <!-- JS populated -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal: Configurar IA -->
+    <div id="aiConfigModal"
+        class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center backdrop-blur-sm p-4">
+        <div class="bg-white rounded-3xl p-8 max-w-2xl w-full shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="font-serif text-2xl font-bold">Configurar IA</h3>
+                <button onclick="closeAIModal()" class="text-gray-400 hover:text-gray-600">
+                    <i data-lucide="x" class="h-6 w-6"></i>
+                </button>
+            </div>
+            <form id="aiConfigForm" class="space-y-4">
+                <input type="hidden" id="aiId">
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-2">Nombre</label>
+                    <input type="text" id="aiName"
+                        class="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none focus:border-purple-500">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">Proveedor</label>
+                        <select id="aiProvider"
+                            class="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none focus:border-purple-500">
+                            <option value="gemini">Gemini</option>
+                            <option value="openai">OpenAI</option>
+                            <option value="replicate">Replicate</option>
+                            <option value="anthropic">Claude (Anthropic)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">Modelo</label>
+                        <input type="text" id="aiModel"
+                            class="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none focus:border-purple-500">
+                    </div>
+                </div>
+                <div>
+                    <label class="flex items-center gap-2 mb-2">
+                        <input type="checkbox" id="aiHasVision" class="w-4 h-4">
+                        <span class="text-sm font-bold text-gray-700">Soporta Visión (Imágenes)</span>
+                    </label>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-2">System Prompt</label>
+                    <textarea id="aiSystemPrompt" rows="6"
+                        class="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none focus:border-purple-500 font-mono text-sm"></textarea>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">Temperature</label>
+                        <input type="number" id="aiTemperature" step="0.1" min="0" max="2"
+                            class="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none focus:border-purple-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">Max Tokens</label>
+                        <input type="number" id="aiMaxTokens"
+                            class="w-full px-4 py-3 rounded-xl border border-gray-200 outline-none focus:border-purple-500">
+                    </div>
+                </div>
+                <div class="flex gap-3 pt-4">
+                    <button type="button" onclick="closeAIModal()"
+                        class="flex-1 px-6 py-3 border-2 border-gray-200 text-gray-700 rounded-xl font-semibold hover:bg-gray-50">Cancelar</button>
+                    <button type="submit"
+                        class="flex-1 px-6 py-3 bg-purple-600 text-white rounded-xl font-semibold hover:bg-purple-700 shadow-lg">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="/static/js/auth.js"></script>
+    <script>
+        let aisData = [];
+
+        // Helper functions for API calls
+        async function apiGet(endpoint) {
+            const token = localStorage.getItem('asesoriaimss_token');
+            const response = await fetch(`/api${endpoint}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            return await response.json();
+        }
+
+        async function apiPost(endpoint, data) {
+            const token = localStorage.getItem('asesoriaimss_token');
+            const response = await fetch(`/api${endpoint}`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+            return await response.json();
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = await checkAuth('admin');
+            if (user.email !== 'admin@imagina.ia') {
+                alert('Acceso denegado.');
+                window.location.href = '/admin';
+                return;
+            }
+            lucide.createIcons();
+            await loadAIs();
+            await loadAPIKeys();
+            await loadStats();
+        });
+
+        function logout() {
+            localStorage.removeItem('asesoriaimss_token');
+            localStorage.removeItem('asesoriaimss_user');
+            window.location.href = '/login';
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('[id^=tab]').forEach(el => el.classList.remove('tab-active'));
+
+            const contentId = 'content' + tab.charAt(0).toUpperCase() + tab.slice(1);
+            const tabId = 'tab' + tab.charAt(0).toUpperCase() + tab.slice(1);
+
+            document.getElementById(contentId).classList.remove('hidden');
+            document.getElementById(tabId).classList.add('tab-active');
+            lucide.createIcons();
+        }
+
+        async function loadAIs() {
+            try {
+                const res = await apiGet('/admin/ai-configs');
+                console.log('API Response:', res);
+
+                if (res.success && res.configs) {
+                    aisData = res.configs;
+                    renderAIsTable();
+                } else {
+                    console.error('Error loading AIs:', res.error || 'Unknown error');
+                    document.getElementById('aisTableBody').innerHTML = '<tr><td colspan="6" class="py-8 text-center text-gray-500">Error al cargar configuraciones de IA</td></tr>';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('aisTableBody').innerHTML = '<tr><td colspan="6" class="py-8 text-center text-gray-500">Error de conexión</td></tr>';
+            }
+        }
+
+        function renderAIsTable() {
+            const tbody = document.getElementById('aisTableBody');
+            if (!aisData || aisData.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="py-8 text-center text-gray-500">No hay IAs configuradas</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = aisData.map(ai => `
+                <tr class="border-b border-gray-50 hover:bg-gray-50">
+                    <td class="py-4">
+                        <div class="flex items-center gap-3">
+                            ${ai.hasVision ? '<i data-lucide="eye" class="h-4 w-4 text-purple-600"></i>' : '<i data-lucide="message-square" class="h-4 w-4 text-gray-400"></i>'}
+                            <span class="font-semibold">${ai.name}</span>
+                        </div>
+                    </td>
+                    <td class="py-4 text-sm text-gray-600">${ai.description || ai.function}</td>
+                    <td class="py-4"><span class="px-2 py-1 bg-gray-100 rounded text-xs font-bold capitalize">${ai.provider}</span></td>
+                    <td class="py-4">
+                        ${ai.enabled ? '<span class="px-2 py-1 bg-green-100 text-green-700 rounded text-xs font-bold">✓ Activo</span>' : '<span class="px-2 py-1 bg-gray-100 text-gray-500 rounded text-xs font-bold">○ Inactivo</span>'}
+                    </td>
+                    <td class="py-4 text-sm">${formatNumber(ai.usageStats?.totalTokens || 0)} tokens</td>
+                    <td class="py-4 text-right">
+                        <button onclick="openEditAI('${ai.id}')" class="text-purple-600 hover:bg-purple-50 p-2 rounded transition">
+                            <i data-lucide="settings" class="h-4 w-4"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function openEditAI(id) {
+            const ai = aisData.find(a => a.id === id);
+            if (!ai) return;
+
+            document.getElementById('aiId').value = ai.id;
+            document.getElementById('aiId').readOnly = true; // No permitir cambiar ID en edición
+            document.getElementById('aiName').value = ai.name;
+            document.getElementById('aiProvider').value = ai.provider;
+            document.getElementById('aiModel').value = ai.model;
+            document.getElementById('aiHasVision').checked = ai.hasVision;
+            document.getElementById('aiSystemPrompt').value = ai.systemPrompt || '';
+            document.getElementById('aiTemperature').value = ai.parameters?.temperature || 0.7;
+            document.getElementById('aiMaxTokens').value = ai.parameters?.maxTokens || 2048;
+            document.getElementById('aiConfigModal').classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function openNewAI() {
+            // Limpiar todos los campos
+            document.getElementById('aiId').value = '';
+            document.getElementById('aiId').readOnly = false; // Permitir ingresar nuevo ID
+            document.getElementById('aiName').value = '';
+            document.getElementById('aiProvider').value = 'gemini';
+            document.getElementById('aiModel').value = 'gemini-2.0-flash-exp';
+            document.getElementById('aiHasVision').checked = false;
+            document.getElementById('aiSystemPrompt').value = '';
+            document.getElementById('aiTemperature').value = '0.7';
+            document.getElementById('aiMaxTokens').value = '2048';
+            document.getElementById('aiConfigModal').classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function closeAIModal() {
+            document.getElementById('aiConfigModal').classList.add('hidden');
+        }
+
+        document.getElementById('aiConfigForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = {
+                id: document.getElementById('aiId').value,
+                name: document.getElementById('aiName').value,
+                function: document.getElementById('aiId').value.replace(/-/g, '_'),
+                enabled: true,
+                provider: document.getElementById('aiProvider').value,
+                model: document.getElementById('aiModel').value,
+                hasVision: document.getElementById('aiHasVision').checked,
+                systemPrompt: document.getElementById('aiSystemPrompt').value,
+                parameters: {
+                    temperature: parseFloat(document.getElementById('aiTemperature').value),
+                    maxTokens: parseInt(document.getElementById('aiMaxTokens').value)
+                }
+            };
+            const res = await apiPost('/admin/ai-configs', data);
+            if (res.success) {
+                alert('✓ IA actualizada correctamente');
+                closeAIModal();
+                await loadAIs();
+            } else {
+                alert('Error: ' + (res.error || 'No se pudo guardar'));
+            }
+        });
+
+        async function loadAPIKeys() {
+            try {
+                const res = await apiGet('/admin/api-keys');
+                if (res.success && res.keys) {
+                    res.keys.forEach(key => {
+                        const statusEl = document.getElementById(key.provider + 'Status');
+                        if (statusEl) {
+                            statusEl.innerHTML = key.isValid
+                                ? '<span class="text-green-600 font-semibold">✓ Configurada</span>'
+                                : '<span class="text-gray-400">○ No configurada</span>';
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading API keys:', error);
+            }
+        }
+
+        document.getElementById('keysForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const gemini = document.getElementById('geminiKey').value;
+            const openai = document.getElementById('openaiKey').value;
+            const replicate = document.getElementById('replicateKey').value;
+            const anthropic = document.getElementById('anthropicKey').value;
+
+            const res = await apiPost('/admin/api-keys', {
+                gemini: gemini || undefined,
+                openai: openai || undefined,
+                replicate: replicate || undefined,
+                anthropic: anthropic || undefined
+            });
+
+            if (res.success) {
+                alert('✓ ' + (res.message || 'API Keys guardadas'));
+                document.getElementById('geminiKey').value = '';
+                document.getElementById('openaiKey').value = '';
+                document.getElementById('replicateKey').value = '';
+                document.getElementById('anthropicKey').value = '';
+                await loadAPIKeys();
+            } else {
+                alert('Error: ' + (res.error || 'No se pudo guardar'));
+            }
+        });
+
+        function toggleKeyVisibility(id) {
+            const input = document.getElementById(id);
+            input.type = input.type === 'password' ? 'text' : 'password';
+        }
+
+        async function loadStats() {
+            try {
+                const res = await apiGet('/admin/ai-stats');
+                if (res.success && res.stats) {
+                    document.getElementById('statTotalTokens').textContent = formatNumber(res.stats.totalTokens);
+                    document.getElementById('statTotalImages').textContent = formatNumber(res.stats.totalImages);
+                    document.getElementById('statTotalCost').textContent = '$' + res.stats.estimatedCost.toFixed(2);
+
+                    const statsTable = document.getElementById('statsTable');
+                    const entries = Object.entries(res.stats.byAI);
+                    if (entries.length === 0) {
+                        statsTable.innerHTML = '<p class="text-gray-500 text-center py-4">No hay datos de consumo aún</p>';
+                    } else {
+                        statsTable.innerHTML = entries.map(([id, data]) => `
+                            <div class="flex justify-between items-center py-3 border-b border-gray-100">
+                                <span class="font-semibold">${data.name}</span>
+                                <div class="text-right text-sm">
+                                    <p class="font-medium">${formatNumber(data.tokens)} tokens</p>
+                                    <p class="text-xs text-gray-500">$${data.cost.toFixed(2)}</p>
+                                </div>
+                            </div>
+                        `).join('');
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+
+        function formatNumber(n) {
+            return n ? n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") : '0';
+        }
+    </script>
+</body>
+
+</html>

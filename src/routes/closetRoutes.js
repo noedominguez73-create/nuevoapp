@@ -5,8 +5,8 @@
 
 const express = require('express');
 const router = express.Router();
-const ClosetItem = require('../models/ClosetItem');
-const { authenticateToken } = require('../middleware/auth');
+const { ClosetItem } = require('../models/index');
+const { authenticateToken } = require('../middleware/authMiddleware.js');
 
 // Middleware: All routes require authentication
 router.use(authenticateToken);

@@ -9,7 +9,15 @@ const { sequelize } = require('./src/config/database.js');
 const { setupRoutes } = require('./src/routes/index.js');
 const { User, SalonConfig } = require('./src/models/index.js');
 const jwt = require('jsonwebtoken');
-const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret_key_change_in_production';
+// ✅ SECURITY FIX: JWT_SECRET ahora es obligatorio en producción
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+    console.error('❌ FATAL: JWT_SECRET not configured!');
+    if (process.env.NODE_ENV === 'production') {
+        throw new Error('JWT_SECRET is required in production. Set it in .env file.');
+    }
+    console.warn('⚠️  Using default JWT_SECRET for development only');
+}
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -32,7 +40,16 @@ const blockSalonFromFinance = (req, res, next) => {
 };
 
 // Middleware
-app.use(cors());
+// ✅ SECURITY FIX: CORS restrictivo en producción
+const corsOptions = {
+    origin: process.env.NODE_ENV === 'production'
+        ? (process.env.CORS_ORIGIN || '').split(',')
+        : '*',
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+};
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -51,23 +68,21 @@ app.get('/health', (req, res) => {
     });
 });
 
-// TEMP: Database Configuration Debug Endpoint
-app.get('/debug-db', (req, res) => {
-    const dbConfig = require('./src/config/database.js');
-    res.json({
-        message: 'Database Configuration (Diagnostic)',
-        config: {
-            host: sequelize.config.host,
-            port: sequelize.config.port,
-            database: sequelize.config.database,
-            username: sequelize.config.username,
-            password_set: !!sequelize.config.password,
-            password_length: sequelize.config.password?.length || 0,
-            dialect: sequelize.config.dialect
-        },
-        status: global.DB_STATUS
+// ✅ SECURITY FIX: Debug endpoint eliminado en producción
+if (process.env.NODE_ENV !== 'production') {
+    app.get('/debug-db', (req, res) => {
+        res.json({
+            message: 'Database Configuration (Development Only)',
+            config: {
+                host: sequelize.config.host,
+                port: sequelize.config.port,
+                database: sequelize.config.database,
+                dialect: sequelize.config.dialect
+            },
+            status: global.DB_STATUS
+        });
     });
-});
+}
 
 // Setup API Routes
 setupRoutes(app);
@@ -86,8 +101,14 @@ app.listen(PORT, () => {
         console.log("✅ Database Connection ESTABLISHED.");
 
         console.log("⏳ Syncing Models...");
-        await sequelize.sync({ alter: true });
-        console.log("✅ Models Synced.");
+        // ✅ SECURITY FIX: Solo alter en desarrollo
+        if (process.env.NODE_ENV === 'production') {
+            await sequelize.sync({ alter: false });
+            console.log("✅ Models Synced (production mode - no alter).");
+        } else {
+            await sequelize.sync({ alter: true });
+            console.log("✅ Models Synced (development mode - with alter).");
+        }
 
         // Auto-Migration: Fase 2 (temporarily disabled for local testing)
         // const { checkAndRunMigrations } = require('./scripts/autoMigrate');
@@ -145,6 +166,7 @@ app.get('/mis-finanzas/pagos', blockSalonFromFinance, (req, res) => res.sendFile
 app.get('/mis-finanzas/facturas', blockSalonFromFinance, (req, res) => res.sendFile(path.join(__dirname, 'app/templates/mis_finanzas_facturas.html')));
 app.get('/mis-finanzas/pendientes', blockSalonFromFinance, (req, res) => res.sendFile(path.join(__dirname, 'app/templates/mis_finanzas_pendientes.html')));
 app.get('/mis-finanzas/reportes', blockSalonFromFinance, (req, res) => res.sendFile(path.join(__dirname, 'app/templates/mis_finanzas_reportes.html')));
+app.get('/control-ia', (req, res) => res.sendFile(path.join(__dirname, 'app/templates/control-ia.html')));
 app.get('/admin-login', (req, res) => res.sendFile(path.join(__dirname, 'app/templates/admin-login.html')));
 app.get('/admin-mirror', (req, res) => res.sendFile(path.join(__dirname, 'app/templates/admin_mirror.html')));
 app.get('/api/mirror/control-pantalla', (req, res) => res.sendFile(path.join(__dirname, 'app/templates/control_pantalla.html')));

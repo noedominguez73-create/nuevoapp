@@ -89,7 +89,11 @@ router.post('/salones', async (req, res) => {
         let user = await User.findOne({ where: { email } });
 
         if (!user) {
-            const plainPassword = password && password.trim() ? password.trim() : '102o3o4o';
+            // ✅ SECURITY FIX: Generar password aleatorio en vez de hardcoded
+            const crypto = require('crypto');
+            const plainPassword = password && password.trim()
+                ? password.trim()
+                : crypto.randomBytes(8).toString('hex');
             const hashedPassword = await bcrypt.hash(plainPassword, 10);
             user = await User.create({
                 email,
@@ -158,6 +162,23 @@ router.delete('/salones/:id', async (req, res) => {
         const user = await User.findByPk(id);
         if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
 
+        await SalonConfig.destroy({ where: { user_id: id } });
+        await user.destroy();
+
+        res.json({ success: true, message: 'Usuario eliminado' });
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+// DELETE /usuarios/:id
+router.delete('/usuarios/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const user = await User.findByPk(id);
+        if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
+
+        // Delete associated salon config if exists
         await SalonConfig.destroy({ where: { user_id: id } });
         await user.destroy();
 

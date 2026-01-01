@@ -104,6 +104,12 @@
                     class="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl text-gray-600 hover:bg-gray-50 transition-all">
                     <i data-lucide="bar-chart-3" class="h-5 w-5 text-indigo-400"></i> Reportes
                 </a>
+
+                <!-- Control de IA - Solo visible para admin@imagina.ia -->
+                <a href="/control-ia" id="controlIALink"
+                    class="hidden flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl text-gray-600 hover:bg-gray-50 transition-all">
+                    <i data-lucide="brain" class="h-5 w-5 text-purple-500"></i> Control de IA
+                </a>
             </nav>
             <div class="p-4 border-t border-gray-100">
                 <div class="flex items-center gap-3 p-3 rounded-xl bg-gray-50">
@@ -462,6 +468,14 @@
 
             lucide.createIcons();
 
+            // Show "Control de IA" button ONLY for admin@imagina.ia
+            if (user.email === 'admin@imagina.ia') {
+                const controlIALink = document.getElementById('controlIALink');
+                if (controlIALink) {
+                    controlIALink.classList.remove('hidden');
+                }
+            }
+
             // Initial Loads
             loadDashboard();
             loadUsers(); // Load visible tab data
@@ -539,9 +553,12 @@
                         <td class="py-4"><span class="px-2 py-1 bg-blue-50 text-blue-600 rounded text-xs font-bold capitalize">${u.role}</span></td>
                         <td class="py-4"><span class="px-2 py-1 bg-gray-100 rounded text-xs font-bold">${u.subscription_status || 'inactivo'}</span></td>
                          <td class="py-4 text-xs">${u.current_month_tokens} / ${u.monthly_token_limit}</td>
-                        <td class="py-4 text-right">--</td>
+                        <td class="py-4 text-right">
+                             <button onclick="deleteUser(${u.id})" class="text-rose-500 hover:bg-rose-50 p-2 rounded"><i data-lucide="trash-2" class="h-4 w-4"></i></button>
+                        </td>
                     </tr>
                  `).join('');
+                lucide.createIcons();
             } else {
                 tbody.innerHTML = '<tr><td colspan="5" class="py-8 text-center text-gray-400">No hay usuarios</td></tr>';
             }
@@ -606,6 +623,16 @@
             if (confirm('¿Eliminar salón? Esta acción es irreversible.')) {
                 const res = await apiDelete(`/admin/salones/${id}`);
                 if (res.success) loadSalons();
+                else alert(res.error);
+            }
+        }
+
+        async function deleteUser(id) {
+            console.log('deleteUser llamado con ID:', id);
+            if (confirm('¿Eliminar usuario? Esta acción es irreversible y eliminará todos sus datos.')) {
+                const res = await apiDelete(`/admin/usuarios/${id}`);
+                console.log('Respuesta del servidor:', res);
+                if (res.success) loadUsers();
                 else alert(res.error);
             }
         }

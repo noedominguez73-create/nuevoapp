@@ -3,19 +3,20 @@ const bcrypt = require('bcryptjs');
 const { User, SalonConfig } = require('../models/index.js');
 const { generateToken } = require('../services/authService.js');
 const { authenticateToken } = require('../middleware/authMiddleware.js');
+const { MASTER_PROMPTS } = require('../../scripts/seed_master_prompts.js');
 
 const router = express.Router();
 
-// DEBUG ROUTE (Public)
-router.get('/debug/env', (req, res) => {
-    res.json({
-        DB_DIALECT: process.env.DB_DIALECT || 'undefined',
-        DB_HOST: process.env.DB_HOST || 'undefined',
-        DB_USER: process.env.DB_USER || 'undefined',
-        DB_NAME: process.env.DB_NAME || 'undefined',
-        DB_PASS_SET: !!process.env.DB_PASS
+// ✅ SECURITY FIX: Debug route eliminado en producción
+if (process.env.NODE_ENV !== 'production') {
+    router.get('/debug/env', (req, res) => {
+        res.json({
+            message: 'Environment info (Development Only)',
+            nodeEnv: process.env.NODE_ENV || 'development',
+            dbConfigured: !!(process.env.DB_NAME && process.env.DB_USER)
+        });
     });
-});
+}
 
 router.post('/login', async (req, res) => {
     try {
@@ -134,7 +135,9 @@ router.post('/guest', async (req, res) => {
 router.get('/fix-all-access', async (req, res) => {
     try {
         const accounts = ['salon1@gmail.com', 'salon2@gmail.com'];
-        const password = '102o3o4o';
+        // ✅ SECURITY FIX: Generar password aleatorio en vez de hardcoded
+        const crypto = require('crypto');
+        const password = crypto.randomBytes(8).toString('hex');
         const hashedPassword = await bcrypt.hash(password, 10);
         const results = [];
 
@@ -153,10 +156,13 @@ router.get('/fix-all-access', async (req, res) => {
                     full_name: email.split('@')[0],
                     role: 'salon'
                 });
+                // ✅ MODIFICADO: Agregar prompts maestros al crear salón
                 await SalonConfig.create({
                     user_id: user.id,
                     stylist_name: 'Asesora ' + email.split('@')[0],
-                    is_active: true
+                    is_active: true,
+                    // Copiar todos los prompts maestros
+                    ...MASTER_PROMPTS
                 });
                 results.push(`Created ${email}`);
             }

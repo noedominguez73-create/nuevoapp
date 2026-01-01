@@ -63,4 +63,4 @@ const FinanceBill = sequelize.define('FinanceBill', {
     ]
 });
 
-module.exports = FinanceBill;
+module.exports = { FinanceBill };

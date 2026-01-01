@@ -51,4 +51,4 @@ const ClosetItem = sequelize.define('ClosetItem', {
     ]
 });
 
-module.exports = ClosetItem;
+module.exports = { ClosetItem };

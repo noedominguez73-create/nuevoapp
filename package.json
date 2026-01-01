@@ -4,12 +4,19 @@
   "description": "Node.js Re-implementation of the Mirror AI Backend",
   "main": "server.js",
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
   },
   "scripts": {
     "start": "node server.js",
     "dev": "node --watch server.js",
-    "build": "echo 'No build step'"
+    "build": "echo 'No build step'",
+    "migrate": "node scripts/migrate_new_modules.js",
+    "setup": "node setup_env.js",
+    "cleanup:check": "node cleanup_for_deploy.js --dry-run",
+    "cleanup:run": "node cleanup_for_deploy.js --clean",
+    "deploy:prepare": "npm run cleanup:check && echo 'Run: npm run cleanup:run' to clean",
+    "postinstall": "echo '✅ Dependencies installed. Run: npm run setup (if .env missing)'"
   },
   "dependencies": {
     "@google-cloud/aiplatform": "^6.0.0",

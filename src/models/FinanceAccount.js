@@ -41,4 +41,4 @@ const FinanceAccount = sequelize.define('FinanceAccount', {
     ]
 });
 
-module.exports = FinanceAccount;
+module.exports = { FinanceAccount };

@@ -10,7 +10,13 @@ const authenticateToken = (req, res, next) => {
 
     try {
         const decoded = verifyToken(token);
-        req.user = decoded;
+        // Map user_id from token payload to id for route compatibility
+        req.user = {
+            id: decoded.user_id,  // Routes expect req.user.id
+            user_id: decoded.user_id,  // Keep for backward compatibility
+            email: decoded.email,
+            role: decoded.role
+        };
         next();
     } catch (err) {
         return res.status(403).json({ error: 'Invalid or expired token' });
