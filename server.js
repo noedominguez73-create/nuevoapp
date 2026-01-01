@@ -182,3 +182,10 @@ app.get('/:page', (req, res) => {
         res.status(404).send('Página no encontrada');
     }
 });
+
+// Start Server
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`✅ Server running on port ${PORT}`);
+    console.log(`   Environment: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`   DB Status: ${global.DB_STATUS}`);
+});
