@@ -1,4 +1,5 @@
 const { Sequelize } = require('sequelize');
+const { log, error } = require('../utils/logger');
 // dotenv is loaded in server.js before this module is required
 
 /**
@@ -14,14 +15,14 @@ const { Sequelize } = require('sequelize');
  * - DB_PASSWORD (REQUERIDO)
  */
 
-console.log('🔌 Initializing Database Connection...');
-console.log(`   Environment: ${process.env.NODE_ENV || 'development'}`);
-console.log(`   Database: ${process.env.DB_NAME || 'NOT_SET'}`);
+log('🔌 Initializing Database Connection...');
+log(`   Environment: ${process.env.NODE_ENV || 'development'}`);
+log(`   Database: ${process.env.DB_NAME || 'NOT_SET'}`);
 
 // Validar variables críticas
 if (!process.env.DB_NAME || !process.env.DB_USER) {
-    console.error('❌ ERROR: Database credentials not configured!');
-    console.error('   Please set DB_NAME and DB_USER in your .env file');
+    error('❌ ERROR: Database credentials not configured!');
+    error('   Please set DB_NAME and DB_USER in your .env file');
     if (process.env.NODE_ENV === 'production') {
         throw new Error('Database credentials missing in production!');
     }
@@ -77,20 +78,21 @@ const sequelize = new Sequelize(
     }
 );
 
-console.log('✅ Sequelize instance created');
-console.log(`   Host: ${process.env.DB_HOST || '127.0.0.1'}:${process.env.DB_PORT || 3306}`);
-console.log(`   User: ${process.env.DB_USER || 'NOT_SET'}`);
-console.log('   Password: ***PROTECTED***');
+log('✅ Sequelize instance created');
+log(`   Host: ${process.env.DB_HOST || '127.0.0.1'}:${process.env.DB_PORT || 3306}`);
+log(`   User: ${process.env.DB_USER || 'NOT_SET'}`);
+log('   Password: ***PROTECTED***');
 
 async function testConnection() {
     try {
         await sequelize.authenticate();
-        console.log('✅ Database connection established successfully.');
+        log('✅ Database connection established successfully.');
         return true;
-    } catch (error) {
-        console.error('❌ Database connection failed:', error.message);
+    } catch (err) {
+        error('❌ Database connection failed:', err.message);
+        error('   Full error:', err.stack);
         if (process.env.NODE_ENV === 'production') {
-            console.error('   This is CRITICAL in production!');
+            error('   This is CRITICAL in production!');
         }
         return false;
     }
