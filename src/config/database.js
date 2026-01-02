@@ -1,5 +1,9 @@
 const { Sequelize } = require('sequelize');
-require('dotenv').config();
+const path = require('path');
+
+// Load .env.production in production, .env otherwise
+const envFile = process.env.NODE_ENV === 'production' ? '.env.production' : '.env';
+require('dotenv').config({ path: path.resolve(process.cwd(), envFile) });
 
 /**
  * ==========================================
