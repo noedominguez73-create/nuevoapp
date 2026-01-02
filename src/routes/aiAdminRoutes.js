@@ -2,10 +2,11 @@ const express = require('express');
 const router = express.Router();
 const AIConfiguration = require('../models/AIConfiguration');
 const APIKey = require('../models/APIKey');
-const { authMiddleware, adminMiddleware } = require('../middleware/authMiddleware');
+const { authenticateToken } = require('../middleware/authMiddleware');
 
-// Middleware: Solo admin
-router.use(authMiddleware, adminMiddleware);
+// Middleware: Requiere autenticación
+// TODO: Add admin role check when needed
+router.use(authenticateToken);
 
 // ============ AI CONFIGURATIONS ============
 
