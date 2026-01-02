@@ -3,7 +3,10 @@ const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
 const bcrypt = require('bcryptjs');
-require('dotenv').config();
+
+// Load correct env file FIRST, before database config
+const envFile = process.env.NODE_ENV === 'production' ? '.env.production' : '.env';
+require('dotenv').config({ path: path.resolve(__dirname, envFile) });
 
 const { sequelize } = require('./src/config/database.js');
 const { setupRoutes } = require('./src/routes/index.js');
