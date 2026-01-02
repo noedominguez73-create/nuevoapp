@@ -24,6 +24,25 @@ async function apiCall(endpoint, options = {}) {
 
     try {
         const response = await fetch(`${API_BASE_URL}${endpoint}`, finalOptions);
+
+        // Check if response is JSON before parsing
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            // Response is not JSON (probably HTML error page)
+            if (!response.ok) {
+                if (response.status === 401) {
+                    clearAuth();
+                    window.location.href = '/login';
+                    throw new Error('Sesión expirada. Por favor inicia sesión nuevamente.');
+                }
+                if (response.status === 403) {
+                    throw new Error('Acceso denegado. No tienes permisos para realizar esta acción.');
+                }
+                throw new Error(`Error ${response.status}: ${response.statusText}`);
+            }
+            throw new Error('El servidor retornó una respuesta inválida (no JSON)');
+        }
+
         const data = await response.json();
 
         if (!response.ok) {
