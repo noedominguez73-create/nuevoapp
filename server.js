@@ -187,20 +187,20 @@ app.get('/:page', (req, res) => {
 });
 
 // Start Server
-// In production (Hostinger with LSAPI), the server is started automatically
-// Only call listen() when running locally or in non-LSAPI environments
-if (process.env.NODE_ENV !== 'production' || !process.env.LSAPI_CHILDREN) {
+// In production (Hostinger), the server is started automatically by LSAPI
+// Only call listen() in development/local environments
+if (process.env.NODE_ENV !== 'production') {
     app.listen(PORT, '0.0.0.0', () => {
         console.log(`✅ Server running on port ${PORT}`);
         console.log(`   Environment: ${process.env.NODE_ENV || 'development'}`);
         console.log(`   DB Status: ${global.DB_STATUS}`);
     });
 } else {
-    console.log(`✅ App initialized for Hostinger LSAPI`);
+    console.log(`✅ App ready for production (Hostinger LSAPI)`);
     console.log(`   Environment: ${process.env.NODE_ENV}`);
     console.log(`   DB Status: ${global.DB_STATUS}`);
 }
 
-// Export app for Hostinger LSAPI
+// Export app for production servers (Hostinger LSAPI/Passenger)
 module.exports = app;
 
