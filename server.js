@@ -105,6 +105,9 @@ app.listen(PORT, () => {
         log("✅ Database Connection ESTABLISHED.");
 
         log("⏳ Syncing Models...");
+        // TEMPORARY: Commented out sync to bypass startup error
+        // The tables are already created manually in MySQL
+        /*
         // ✅ SECURITY FIX: Solo alter en desarrollo
         if (process.env.NODE_ENV === 'production') {
             await sequelize.sync({ alter: false });
@@ -113,6 +116,8 @@ app.listen(PORT, () => {
             await sequelize.sync({ alter: true });
             log("✅ Models Synced (development mode - with alter).");
         }
+        */
+        log("✅ Models Sync SKIPPED (tables already exist).");
 
         // Auto-Migration: Fase 2 (temporarily disabled for local testing)
         // const { checkAndRunMigrations } = require('./scripts/autoMigrate');
