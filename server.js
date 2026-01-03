@@ -9,13 +9,14 @@ const envFile = process.env.NODE_ENV === 'production' ? '.env.production' : '.en
 require('dotenv').config({ path: path.resolve(__dirname, envFile) });
 
 const { sequelize } = require('./src/config/database.js');
+const { log, error } = require('./src/utils/logger');
 const { setupRoutes } = require('./src/routes/index.js');
 const { User, SalonConfig } = require('./src/models/index.js');
 const jwt = require('jsonwebtoken');
 // ✅ SECURITY FIX: JWT_SECRET ahora es obligatorio en producción
 const JWT_SECRET = process.env.JWT_SECRET;
 if (!JWT_SECRET) {
-    console.error('❌ FATAL: JWT_SECRET not configured!');
+    error('❌ FATAL: JWT_SECRET not configured!');
     if (process.env.NODE_ENV === 'production') {
         throw new Error('JWT_SECRET is required in production. Set it in .env file.');
     }
@@ -99,18 +100,18 @@ app.listen(PORT, () => {
 (async () => {
     global.DB_STATUS = 'Connecting...';
     try {
-        console.log("⏳ Connecting to Database...");
+        log("⏳ Connecting to Database...");
         await sequelize.authenticate();
-        console.log("✅ Database Connection ESTABLISHED.");
+        log("✅ Database Connection ESTABLISHED.");
 
-        console.log("⏳ Syncing Models...");
+        log("⏳ Syncing Models...");
         // ✅ SECURITY FIX: Solo alter en desarrollo
         if (process.env.NODE_ENV === 'production') {
             await sequelize.sync({ alter: false });
-            console.log("✅ Models Synced (production mode - no alter).");
+            log("✅ Models Synced (production mode - no alter).");
         } else {
             await sequelize.sync({ alter: true });
-            console.log("✅ Models Synced (development mode - with alter).");
+            log("✅ Models Synced (development mode - with alter).");
         }
 
         // Auto-Migration: Fase 2 (temporarily disabled for local testing)
@@ -122,7 +123,7 @@ app.listen(PORT, () => {
         // Seeder
         const userCount = await User.count();
         if (userCount === 0) {
-            console.log("🌱 Seeding Admin...");
+            log("🌱 Seeding Admin...");
             const hashedPassword = await bcrypt.hash('admin123', 10);
             const admin = await User.create({
                 email: 'admin@imagina.ia',
@@ -139,10 +140,11 @@ app.listen(PORT, () => {
                 secondary_color: '#00ccff',
                 is_active: true
             });
-            console.log("✅ Seeding Complete.");
+            log("✅ Seeding Complete.");
         }
     } catch (dbError) {
-        console.error("❌ DB ERROR:", dbError.message);
+        error("❌ DB ERROR:", dbError.message);
+        error("   Full stack:", dbError.stack);
         global.DB_STATUS = 'ERROR: ' + dbError.message;
     }
 })();
