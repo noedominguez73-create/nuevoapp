@@ -105,10 +105,10 @@ app.listen(PORT, () => {
         log("✅ Database Connection ESTABLISHED.");
 
         log("⏳ Syncing Models...");
-        // TEMPORAL: Crear tabla users automáticamente
+        // ✅ SECURITY FIX: Solo alter en desarrollo
         if (process.env.NODE_ENV === 'production') {
-            await sequelize.sync({ alter: true });  // CAMBIAR A FALSE DESPUÉS
-            log("✅ Models Synced (production mode - ALTER ENABLED FOR TABLE CREATION).");
+            await sequelize.sync({ alter: false });
+            log("✅ Models Synced (production mode - no alter).");
         } else {
             await sequelize.sync({ alter: true });
             log("✅ Models Synced (development mode - with alter).");
